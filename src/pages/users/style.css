@@ -1,0 +1,171 @@
+.col-md-4 {
+    margin-bottom: 30px;
+  }
+  
+  .card {
+    padding: 30px;
+    border: solid 1px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+  }
+  .card:hover {
+    box-shadow: 0 0 12px 3px rgba(0, 0, 0, 0.08);
+  }
+  .card-title {
+    margin-top: 20px;
+  }
+  .card-text {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.6);
+  }
+  .card-text .fa {
+    font-size: 15px;
+  }
+  .avatar {
+    width: 140px;
+    margin: auto;
+  }
+  .avatar img {
+    border: solid 6px transparent;
+    border-radius: 50%;
+  }
+ 
+  
+  .btn {
+    border-radius: 25px;
+  }
+  
+  footer p {
+    color: rgba(0, 0, 0, 0.6);
+  }
+  
+  footer p a,
+  footer p a:hover {
+    color: rgb(99, 204, 131);
+  }
+  
+  @media (min-width: 1200px) {
+    .container {
+      max-width: 1040px;
+    }
+  }
+  
+  .center {
+      text-align: center;
+  }
+
+  .ribbon {
+    width: 100%;
+    height: 430px;
+    position: relative;
+    margin-bottom: 30px;
+    background-size: cover;
+    color: white;
+  }
+  .ribbon:nth-child(even) {
+    margin-right: 4%;
+  }
+  @media (max-width: 500px) {
+    .ribbon {
+      width: 100%;
+    }
+    .ribbon:nth-child(even) {
+      margin-right: 0%;
+    }
+  }
+  
+  .wrap {
+    width: 100%;
+    height: 430px;
+    position: absolute;
+    top: -8px;
+    left: 8px;
+    overflow: hidden;
+  }
+  .wrap:before, .wrap:after {
+    content: ""; 
+    position: absolute;
+  }
+  .wrap:before {
+    width: 40px;
+    height: 8px;
+    right: 100px;
+    background: #4D6530;
+    border-radius: 8px 8px 0px 0px;
+  }
+  .wrap:after {
+    width: 8px;
+    height: 40px;
+    right: 0px;
+    top: 100px;
+    background: #4D6530;
+    border-radius: 0px 8px 8px 0px;
+  }
+  .Arizona {
+    width: 200px;
+    height: 40px;
+    line-height: 40px;
+    position: absolute;
+    top: 30px;
+    right: -50px;
+    z-index: 2;
+    overflow: hidden;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    border: 1px dashed;
+    box-shadow:0 0 0 3px #57DD43,  0px 21px 5px -18px rgba(0,0,0,0.6);
+    background: #57DD43;
+    text-align: center;
+  }
+  .Texas {
+    width: 200px;
+    height: 40px;
+    line-height: 40px;
+    position: absolute;
+    top: 30px;
+    right: -50px;
+    z-index: 2;
+    overflow: hidden;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    border: 1px dashed;
+    box-shadow:0 0 0 3px #f3c702,  0px 21px 5px -18px rgba(0,0,0,0.6);
+    background: #f3c702;
+    text-align: center;
+  }
+  .Pending {
+    width: 200px;
+    height: 40px;
+    line-height: 40px;
+    position: absolute;
+    top: 30px;
+    right: -50px;
+    z-index: 2;
+    overflow: hidden;
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    border: 1px dashed;
+    box-shadow:0 0 0 3px #e90e0e,  0px 21px 5px -18px rgba(0,0,0,0.6);
+    background: #e90e0e;
+    text-align: center;
+  }
+  .k-calendar-container{
+    z-index:1000000!important
+ }
+ .makeStyles-root-1{
+    overflow-x: inherit!important;
+ }
+
+ /* Style buttons */
+.btn {
+    background-color: DodgerBlue; /* Blue background */
+    border: none; /* Remove borders */
+    color: white; /* White text */
+    padding: 12px 16px; /* Some padding */
+    font-size: 16px; /* Set a font size */
+    cursor: pointer; /* Mouse pointer on hover */
+  }
+  
+  /* Darker background on mouse-over */
+  .btn:hover {
+    background-color: RoyalBlue;
+  }

@@ -1,5 +1,4 @@
-import React from "react";
-
+import React  from "react";
 var UserStateContext = React.createContext();
 var UserDispatchContext = React.createContext();
 
@@ -17,9 +16,8 @@ function userReducer(state, action) {
 
 function UserProvider({ children }) {
   var [state, dispatch] = React.useReducer(userReducer, {
-    isAuthenticated: !!localStorage.getItem("id_token"),
+    isAuthenticated: !!localStorage.getItem("email"),
   });
-
   return (
     <UserStateContext.Provider value={state}>
       <UserDispatchContext.Provider value={dispatch}>
@@ -45,32 +43,90 @@ function useUserDispatch() {
   return context;
 }
 
-export { UserProvider, useUserState, useUserDispatch, loginUser, signOut };
+export { UserProvider, useUserState, useUserDispatch, loginUser, signOut, signUp,userReducer };
 
 // ###########################################################
 
-function loginUser(dispatch, login, password, history, setIsLoading, setError) {
-  setError(false);
-  setIsLoading(true);
+function loginUser(dispatch,email, password, history, setIsLoading, setError,firebase) {
+//   setError(false);
+//   setIsLoading(true);
 
-  if (!!login && !!password) {
-    setTimeout(() => {
-      localStorage.setItem('id_token', 1)
-      setError(null)
-      setIsLoading(false)
-      dispatch({ type: 'LOGIN_SUCCESS' })
-
-      history.push('/app/dashboard')
-    }, 2000);
-  } else {
-    dispatch({ type: "LOGIN_FAILURE" });
-    setError(true);
-    setIsLoading(false);
-  }
+//   firebase.firestore().collection("users").where("email","==",email).get().then((querySnapshot) => {
+//     var docs = querySnapshot.docs;
+//     if(docs.length > 0) //update documentation
+//     {
+//       querySnapshot.forEach((doc) => {
+//         if(password == doc.data().password){
+//           // firebase.auth().currentUser.getIdToken(/* forceRefresh */ true).then(function(idToken) {
+//           //   // Send token to your backend via HTTPS
+//           //   console.log("idToken",idToken)
+//           //   // ...
+//           // }).catch(function(error) {
+//           //   // Handle error
+//           // });
+//           var secret = 'secretstar';
+//           var role = {role:doc.data().role,allow: doc.data().allow}
+//           var token = jwt.encode(role, secret);
+//           localStorage.setItem('name', doc.data().name);
+//           localStorage.setItem('email', email);
+//           localStorage.setItem('token', token);
+//           setError(null)
+//           setIsLoading(false)
+//           dispatch({ type: 'LOGIN_SUCCESS' })
+//         }else{
+//           // dispatch({ type: "LOGIN_FAILURE" });
+//           setError(true);
+//           setIsLoading(false); 
+//         }
+//       })
+//     }
+//     else //add documentation
+//     {
+//       // dispatch({ type: "LOGIN_FAILURE" });
+//       setError(true);
+//       setIsLoading(false); 
+//     }
+// })
+}
+function signUp(dispatch,userName, email, password, history, setIsLoading, setError,firebase) {
+  // setError(false);
+  // setIsLoading(true);
+  // const role = "seller";
+  // const userData = {name: userName, email: email, password: password,role:role};
+  // firebase.firestore().collection("users").add(userData).then((result) => {
+  //     localStorage.setItem('email', email);
+  //     localStorage.setItem('name', userName);
+  //     var secret = 'secretstar';
+  //     var role = {role:"seller",allow:false}
+  //     var token = jwt.encode(role, secret);
+  //     localStorage.setItem('token', token);
+  //     data.calc.email = email;
+  //     data.calc.C3 = "TX";
+  //     data.calc.C4 = userName;
+  //     let obj = {};
+  //     obj.email = email;
+  //     obj.data = data.adder;
+  //     firebase.firestore().collection("adders").add(obj).then((result) => {
+  //       firebase.firestore().collection("calculators").add(data.calc).then((result) =>{
+  //         setError(null)
+  //         setIsLoading(false)
+  //         dispatch({ type: 'LOGIN_SUCCESS' })
+  //         history.push('/app/dashboard')
+  //         }
+  //       )
+  //     })
+  // }).catch((error) => {
+  //     dispatch({ type: "LOGIN_FAILURE" });
+  //     setError(true);
+  //     setIsLoading(false); 
+  // });
 }
 
+
 function signOut(dispatch, history) {
-  localStorage.removeItem("id_token");
+  localStorage.removeItem("email");
+  localStorage.removeItem("name");
+  localStorage.removeItem("token");
   dispatch({ type: "SIGN_OUT_SUCCESS" });
   history.push("/login");
 }

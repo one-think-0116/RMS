@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import {
   AppBar,
   Toolbar,
@@ -6,8 +6,7 @@ import {
   InputBase,
   Menu,
   MenuItem,
-  Fab,
-  Link
+  Fab
 } from "@material-ui/core";
 import {
   Menu as MenuIcon,
@@ -24,7 +23,7 @@ import classNames from "classnames";
 import useStyles from "./styles";
 
 // components
-import { Badge, Typography, Button } from "../Wrappers";
+import { Badge, Typography } from "../Wrappers";
 import Notification from "../Notification/Notification";
 import UserAvatar from "../UserAvatar/UserAvatar";
 
@@ -34,7 +33,8 @@ import {
   useLayoutDispatch,
   toggleSidebar,
 } from "../../context/LayoutContext";
-import { useUserDispatch, signOut } from "../../context/UserContext";
+import { useUserDispatch } from "../../context/UserContext";
+import { FirebaseContext } from '../../components/Firebase/context';
 
 const messages = [
   {
@@ -96,7 +96,7 @@ export default function Header(props) {
   var layoutState = useLayoutState();
   var layoutDispatch = useLayoutDispatch();
   var userDispatch = useUserDispatch();
-
+  const firebase = useContext(FirebaseContext);
   // local
   var [mailMenu, setMailMenu] = useState(null);
   var [isMailsUnread, setIsMailsUnread] = useState(true);
@@ -104,7 +104,21 @@ export default function Header(props) {
   var [isNotificationsUnread, setIsNotificationsUnread] = useState(true);
   var [profileMenu, setProfileMenu] = useState(null);
   var [isSearchOpen, setSearchOpen] = useState(false);
-
+  const signOut = () => {
+      firebase.auth().signOut();
+      localStorage.removeItem("email");
+      localStorage.removeItem("name");
+      localStorage.removeItem("token");
+      userDispatch({ type: "SIGN_OUT_SUCCESS" });
+      props.history.push("/login");
+  }
+  const addSizeToGoogleProfilePic = (url) => {
+    if (url.indexOf('googleusercontent.com') !== -1 && url.indexOf('?') === -1) {
+      return url + '?sz=150';
+    }
+    return url;
+  }
+  
   return (
     <AppBar position="fixed" className={classes.appBar}>
       <Toolbar className={classes.toolbar}>
@@ -137,10 +151,9 @@ export default function Header(props) {
           )}
         </IconButton>
         <Typography variant="h6" weight="medium" className={classes.logotype}>
-          React Material Admin
+          RMS Commission Management
         </Typography>
         <div className={classes.grow} />
-        <Button component={Link} href="https://flatlogic.com/templates/react-material-admin-full" variant={"outlined"} color={"secondary"} className={classes.purchaseBtn}>Unlock full version</Button>
         <div
           className={classNames(classes.search, {
             [classes.searchFocused]: isSearchOpen,
@@ -200,10 +213,13 @@ export default function Header(props) {
           aria-haspopup="true"
           color="inherit"
           className={classes.headerMenuButton}
-          aria-controls="profile-menu"
+          style={{background:'url('+addSizeToGoogleProfilePic(localStorage.getItem("photoURL"))+')',width:50,height:50,backgroundSize:"100% 100%"}}
+          aria-controls="mail-menu"
           onClick={e => setProfileMenu(e.currentTarget)}
         >
-          <AccountIcon classes={{ root: classes.headerIcon }} />
+          {/* style={{background:'url('+addSizeToGoogleProfilePic(localStorage.getItem("photoURL"))+')'}} */}
+
+          {/* <AccountIcon classes={{ root: classes.headerIcon }} /> */}
         </IconButton>
         <Menu
           id="mail-menu"
@@ -286,18 +302,11 @@ export default function Header(props) {
           className={classes.headerMenu}
           classes={{ paper: classes.profileMenu }}
           disableAutoFocusItem
+         
         >
           <div className={classes.profileMenuUser}>
             <Typography variant="h4" weight="medium">
-              John Smith
-            </Typography>
-            <Typography
-              className={classes.profileMenuLink}
-              component="a"
-              color="primary"
-              href="https://flatlogic.com"
-            >
-              Flalogic.com
+              {localStorage.getItem("name")}
             </Typography>
           </div>
           <MenuItem
@@ -328,7 +337,7 @@ export default function Header(props) {
             <Typography
               className={classes.profileMenuLink}
               color="primary"
-              onClick={() => signOut(userDispatch, props.history)}
+              onClick={signOut}
             >
               Sign Out
             </Typography>

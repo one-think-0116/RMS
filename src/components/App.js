@@ -3,18 +3,18 @@ import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
 
 // components
 import Layout from "./Layout";
-
 // pages
 import Error from "../pages/error";
 import Login from "../pages/login";
-
 // context
 import { useUserState } from "../context/UserContext";
 
+
 export default function App() {
   // global
-  var { isAuthenticated } = useUserState();
 
+
+  var { isAuthenticated } = useUserState();
   return (
     <HashRouter>
       <Switch>

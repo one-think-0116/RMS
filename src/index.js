@@ -8,16 +8,19 @@ import App from "./components/App";
 import * as serviceWorker from "./serviceWorker";
 import { LayoutProvider } from "./context/LayoutContext";
 import { UserProvider } from "./context/UserContext";
-
+import FirebaseProvider  from './components/Firebase/context';
+import '@progress/kendo-theme-default/dist/all.css';
 ReactDOM.render(
+  <FirebaseProvider>
   <LayoutProvider>
     <UserProvider>
       <ThemeProvider theme={Themes.default}>
         <CssBaseline />
-        <App />
+          <App />
       </ThemeProvider>
     </UserProvider>
-  </LayoutProvider>,
+  </LayoutProvider>
+  </FirebaseProvider>,
   document.getElementById("root"),
 );
 
