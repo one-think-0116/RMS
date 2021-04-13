@@ -252,6 +252,7 @@ const style = () => {
   $("#C4").css({"color":"black"});
   $("#C4").css({"text-align":"center"});
   $("#C10").css({"color":"black"});
+  // $("#C10").css({"width":"10%"});
   $("#C10").css({"text-align":"center"});
   $("#C11").css({"color":"black"});
   $("#C11").css({"text-align":"center"});
@@ -535,33 +536,33 @@ return(
       {indicatorEl} {/* renders only while loading */}
     </section> :
           <Grid container spacing={4}>
-        <Grid item xs={7}>
+        <Grid item lg={7} md={6} sm={12} xs={12}>
           <Widget title="YOUR COMMISSION Calculator" >
-            <Paper style={{ paddingLeft: 150,paddingRight: 150 }}>
+            <Paper style={{ paddingLeft: '4%',paddingRight: '4%' }}>
               <Grid container alignItems="flex-start" spacing={2}>
-                <Grid item xs={8} style={{textAlign: "center",marginTop: 30}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center",marginTop: 30}}>
                     System Number
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center"}}>
-                  <TextField name="C3" id="C3" label="" value={C3} style={{textAlign: "center",marginTop: 15,backgroundColor:"rgb(229 255 14)"}} disabled/>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center"}}>
+                  <TextField name="C3" id="C3" label="" value={C3} style={{textAlign: "center",marginTop: 15,backgroundColor:"rgb(229 255 14)",width: "75%"}} disabled/>
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                     Name of Customer
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center"}}>
-                  <TextField name="C4" id="C4" label="" value={C4} style={{textAlign: "center",marginTop: -12,backgroundColor:"rgb(229 255 14)"}} disabled/>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center"}}>
+                  <TextField name="C4" id="C4" label="" value={C4} style={{textAlign: "center",marginTop: -12,backgroundColor:"rgb(229 255 14)",width: "75%"}} disabled/>
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                     Select Sales Rep
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center",marginTop: -15}}>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -15}}>
                   <Select
                     labelId="C5"
                     name="C5"
                     id="C5"
                     value={C5}
                     onChange={handleChange}
-                    style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: 183}}
+                    style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: "75%"}}
                   >
                     <MenuItem value={"Bill Wade"}>Bill Wade</MenuItem>
                     <MenuItem value={"Chandler Brooks"}>Chandler Brooks</MenuItem>
@@ -575,16 +576,16 @@ return(
                     <MenuItem value={"Tim Chung"}>Tim Chung</MenuItem>
                   </Select>
                 </Grid>
-                <Grid item xs={8}  style={{textAlign: "center"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12}  style={{textAlign: "center"}}>
                     Select Sales Rep Status level (see next Tab)
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center",marginTop: -15}}>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -15}}>
                   <Select
                     labelId="C6"
                     name="C6"
                     value={C6}
                     onChange={handleChange}
-                    style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: 183}}
+                    style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: "75%"}}
                     disabled
                   >
                     <MenuItem value={"Bronze"}>Bronze</MenuItem>
@@ -592,46 +593,46 @@ return(
                     <MenuItem value={"Chairman"}>Chairman's Club</MenuItem>
                   </Select>
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                     Select SelfGen Lead
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center",marginTop: -15}}>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -15}}>
                   <Select
                     labelId="C7"
                     name="C7"
                     value={C7}
                     onChange={handleChange}
-                    style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: 183}}
+                    style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: "75%"}}
                   >
                     <MenuItem value={"Self"}>Self</MenuItem>
                     <MenuItem value={"Company"}>Company</MenuItem>
                   </Select>
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                     Select Module
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center",marginTop: -15}}>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -15}}>
                   <Select
                     labelId="C8"
                     name="C8"
                     value={C8}
                     onChange={handleChange}
-                    style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: 183}}
+                    style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: "75%"}}
                   >
                     <MenuItem value={"REC 370"}>REC 370</MenuItem>
                     <MenuItem value={"Mission 345"}>Mission 345</MenuItem>
                   </Select>
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                     Select Battery Type
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center",marginTop: -15}}>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -15}}>
                   <Select
                     labelId="C9"
                     name="C9"
                     value={C9}
                     onChange={handleChange}
-                    style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: 183}}
+                    style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: "75%"}}
                   >
                     <MenuItem value={"None"}>None</MenuItem>
                     <MenuItem value={"Enphase 3kw"}>Enphase 3kw</MenuItem>
@@ -640,10 +641,10 @@ return(
                     <MenuItem value={"Panasonic 17kw"}>Panasonic 17kw</MenuItem>
                   </Select>
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                     Enter System Size in watts
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center",marginTop: -12}}>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -12}}>
                 <TextField
                   onBlur={handleBlur}
                   name="C10"
@@ -652,13 +653,13 @@ return(
                   InputProps={{
                     inputComponent: CountNumber,
                   }}
-                  style={{textAlign: "center",backgroundColor:"rgb(229 255 14)"}}
+                  style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: "75%"}}
                 />
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                     Total System Price from Sighten Proposal
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center",marginTop: -12}}>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -12}}>
                 <TextField
                   onBlur={handleBlur}
                   name="C11"
@@ -667,29 +668,29 @@ return(
                   InputProps={{
                     inputComponent: MoneyNumber,
                   }}
-                  style={{textAlign: "center",backgroundColor:"rgb(229 255 14)"}}
+                  style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: "75%"}}
                 />
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center",color: "#fb00c5"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center",color: "#fb00c5"}}>
                     Select Cash Back to Customer
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center",marginTop: -15}}>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -15}}>
                   <Select
                     labelId="C12"
                     name="C12"
                     value={C12}
                     onChange={handleChange}
-                    style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: 183}}
+                    style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: "75%"}}
                   >
                     <MenuItem value={"$0"}>$0</MenuItem>
                     <MenuItem value={"$1000"}>$1000</MenuItem>
                     <MenuItem value={"$2000"}>$2000</MenuItem>
                   </Select>
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center",color: "#fb00c5"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center",color: "#fb00c5"}}>
                     Total System Price after Cash Back
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center",marginTop: -12}}>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -12}}>
                 <TextField
                   onBlur={handleBlur}
                   name="C13"
@@ -698,19 +699,20 @@ return(
                   InputProps={{
                     inputComponent: MoneyNumber,
                   }}
+                  style={{width: "75%"}}
                   disabled
                 />
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                     Select Dealer Fee
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center",marginTop: -15}}>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -15}}>
                   <Select
                     labelId="C14"
                     name="C14"
                     value={C14}
                     onChange={handleChange}
-                    style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: 183}}
+                    style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: "75%"}}
                   >
                     <MenuItem value={"0%"}>0%</MenuItem>
                     <MenuItem value={"20%"}>20%</MenuItem>
@@ -721,10 +723,10 @@ return(
                     <MenuItem value={"30%"}>30%</MenuItem>
                   </Select>
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                     System Price without Dealer Fee
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center",marginTop: -12}}>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -12}}>
                 <TextField
                   onBlur={handleBlur}
                   name="C15"
@@ -733,13 +735,14 @@ return(
                   InputProps={{
                     inputComponent: MoneyNumber,
                   }}
+                  style={{width: "75%"}}
                   disabled
                 />
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                     Solar Insure Adder (automatic)
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center",marginTop: -12}}>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -12}}>
                 <TextField
                   onBlur={handleBlur}
                   name="C16"
@@ -748,13 +751,14 @@ return(
                   InputProps={{
                     inputComponent: MoneyNumber,
                   }}
+                  style={{width: "75%"}}
                   disabled
                 />
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                     Battery Price (automatic)
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center",marginTop: -12}}>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -12}}>
                 <TextField
                   onBlur={handleBlur}
                   name="C17"
@@ -763,13 +767,14 @@ return(
                   InputProps={{
                     inputComponent: MoneyNumber,
                   }}
+                  style={{width: "75%"}}
                   disabled
                 />
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                     Total of ALL Adders
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center",marginTop: -12}}>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -12}}>
                 <TextField
                   onBlur={handleBlur}
                   name="C18"
@@ -779,13 +784,13 @@ return(
                     inputComponent: MoneyNumber,
                   }}
                   disabled
-                  style={{backgroundColor:"rgb(229 255 14)"}}
+                  style={{backgroundColor:"rgb(229 255 14)",width: "75%"}}
                 />
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center",fontWeight:"bolder"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center",fontWeight:"bolder"}}>
                     System Price (This is the Solar Portion only)
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center",marginTop: -12}}>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -12}}>
                 <TextField
                   onBlur={handleBlur}
                   name="C19"
@@ -794,14 +799,15 @@ return(
                   InputProps={{
                     inputComponent: MoneyNumber,
                   }}
+                  style={{width: "75%"}}
                   disabled
                   
                 />
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center",fontWeight:"bolder"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center",fontWeight:"bolder"}}>
                     System Price per Watt (Solar Portion Only)
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center",marginTop: -12}}>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -12}}>
                 <TextField
                   onBlur={handleBlur}
                   name="C20"
@@ -811,14 +817,14 @@ return(
                     inputComponent: MoneyNumber,
                   }}
                   disabled
-                  style={{backgroundColor:"#38fbe0"}}
+                  style={{backgroundColor:"#38fbe0",width: "75%"}}
                 />
                 </Grid>
-                <Grid item xs={8} style={{textAlign: "center",color: "#fb00c5"}}>
+                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center",color: "#fb00c5"}}>
                     Status of Sale
                 </Grid>
-                <Grid item xs={4}  style={{textAlign: "center"}}>
-                  <TextField id="C21" label="" value={C21} style={{textAlign: "center",marginTop: -12}} disabled/>
+                <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center"}}>
+                  <TextField id="C21" label="" value={C21} style={{textAlign: "center",marginTop: -12,width: "75%"}} disabled/>
                 </Grid>
                 <Grid item style={{ marginTop: 16 }}>
                 
@@ -827,14 +833,14 @@ return(
             </Paper>
           </Widget>
         </Grid>
-        <Grid item xs={5}>
+        <Grid item lg={5} md={6} sm={12} xs={12}>
           <Widget title="COMMISSION BREAKDOWN">
-          <Paper style={{ paddingLeft: 75,paddingRight: 75 }}>
+          <Paper style={{ paddingLeft: "4%",paddingRight: "4%" }}>
               <Grid container alignItems="flex-start" spacing={2}>
-                <Grid item xs={6} style={{textAlign: "center",marginTop:200}}>
+                <Grid item lg={6} md={6} sm={6} xs={12} style={{textAlign: "center",marginTop:20}}>
                 Total Overrage per watt
                 </Grid>
-                <Grid item xs={6}  style={{textAlign: "center",marginTop: 188}}>
+                <Grid item lg={6} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: 8}}>
                 <TextField
                   onChange={handleChange}
                   name="F14"
@@ -843,13 +849,14 @@ return(
                   InputProps={{
                     inputComponent: MoneyNumber,
                   }}
+                  style={{width: "75%"}}
                   disabled
                 />
                 </Grid>
-                <Grid item xs={6} style={{textAlign: "center"}}>
+                <Grid item lg={6} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                 Reps' Share of Overrage/watt
                 </Grid>
-                <Grid item xs={6}  style={{textAlign: "center",marginTop: -12}}>
+                <Grid item lg={6} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -12}}>
                 <TextField
                   onChange={handleChange}
                   name="F15"
@@ -858,13 +865,14 @@ return(
                   InputProps={{
                     inputComponent: MoneyNumber,
                   }}
+                  style={{width: "75%"}}
                   disabled
                 />
                 </Grid>
-                <Grid item xs={6} style={{textAlign: "center"}}>
+                <Grid item lg={6} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                 BaseLine Commission
                 </Grid>
-                <Grid item xs={6}  style={{textAlign: "center",marginTop: -12}}>
+                <Grid item lg={6} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -12}}>
                 <TextField
                   onChange={handleChange}
                   name="F17"
@@ -873,13 +881,14 @@ return(
                   InputProps={{
                     inputComponent: MoneyNumber,
                   }}
+                  style={{width: "75%"}}
                   disabled
                 />
                 </Grid>
-                <Grid item xs={6} style={{textAlign: "center"}}>
+                <Grid item lg={6} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                 Overrage Commission
                 </Grid>
-                <Grid item xs={6}  style={{textAlign: "center",marginTop: -12}}>
+                <Grid item lg={6} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -12}}>
                 <TextField
                   onChange={handleChange}
                   name="F18"
@@ -888,13 +897,14 @@ return(
                   InputProps={{
                     inputComponent: MoneyNumber,
                   }}
+                  style={{width: "75%"}}
                   disabled
                 />
                 </Grid>
-                <Grid item xs={6} style={{textAlign: "center"}}>
+                <Grid item lg={6} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                 Battery Commission
                 </Grid>
-                <Grid item xs={6}  style={{textAlign: "center",marginTop: -12}}>
+                <Grid item lg={6} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -12}}>
                 <TextField
                   onChange={handleChange}
                   name="F19"
@@ -903,13 +913,14 @@ return(
                   InputProps={{
                     inputComponent: MoneyNumber,
                   }}
+                  style={{width: "75%"}}
                   disabled
                 />
                 </Grid>
-                <Grid item xs={6} style={{textAlign: "center"}}>
+                <Grid item lg={6} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                 Total Commission (Solar+Storage)
                 </Grid>
-                <Grid item xs={6}  style={{textAlign: "center",marginTop: -12}}>
+                <Grid item lg={6} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -12}}>
                 <TextField
                   onChange={handleChange}
                   name="F20"
@@ -919,7 +930,7 @@ return(
                     inputComponent: MoneyNumber,
                   }}
                   disabled
-                  style={{backgroundColor:"#65ea44"}}
+                  style={{backgroundColor:"#65ea44",width: "75%"}}
                 />
                 </Grid>
                 <Grid item style={{ marginTop: 16 }}>

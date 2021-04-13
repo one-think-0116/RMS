@@ -97,9 +97,9 @@ export default function Guide(){
                         resizable={true}
                         editField="inEdit"
                         >
-                        <Column field="id" title="Id" width="50px" editable={false} auto />
+                        <Column field="id" title="Id" width="50px" editable={false} auto locked={true}/>
                         <Column title="A" width="300px" field="A" />
-                        <Column title="B" width="" editor="text" field="B" />
+                        <Column title="B" width="1200px" editor="text" field="B" />
                     </Grid>
                 </Paper>
                 </Widget>

@@ -16,6 +16,7 @@ import {
     // styles
     import "react-toastify/dist/ReactToastify.css";
     import useStyles from "./styles";
+    import "./style.css"
 
 export default function Adder(){
     var classes = useStyles();
@@ -149,6 +150,7 @@ export default function Adder(){
           })
         
       }, [])
+
       return(
         <>
             <ToastContainer 
@@ -158,7 +160,7 @@ export default function Adder(){
             <section {...containerProps} style={{textAlign:"center",marginTop:window.innerHeight/2 - 100}}>
                 {indicatorEl} 
             </section> :
-            <MaterialGrid item xs={12}>
+            <MaterialGrid item lg={12} md={12} sm={12} xs={12}>
                 <Widget title="ADDERS, BATTERIES AND INSURANCE PRICES">
                 <Paper style={{}}>
                     <Grid
@@ -173,15 +175,15 @@ export default function Adder(){
                         resizable={true}
                         editField="inEdit"
                         >
-                        <Column field="id" title="Id" width="50px" editable={false} auto />
-                        <Column title="Adders" width="500px" field="adders" />
-                        <Column title="Sales - Cash Price" width="150px" editor="text" field="sales_cash_price" />
-                        <Column title="Scale" editor="text" width="300px" field="scale" />
-                        <Column title="Quantity" editor="text" field="quantity" />
-                        <Column title="Total" editor="text" field="total" />
-                        <Column title="" editor="text" field="F" />
-                        <Column title="" editor="text" field="G" />
-                        <Column title="" editor="text" field="H" />
+                        <Column field="id" title="Id" width="50px" editable={false} auto locked={true} className="centerClass"/>
+                        <Column title="Adders"  field="adders" width="500px" className="centerClass" />
+                        <Column title="Sales - Cash Price"  editor="text" field="sales_cash_price" width="200px" className="centerClass"  />
+                        <Column title="Scale" editor="text"  field="scale" width="200px" className="centerClass" />
+                        <Column title="Quantity" editor="text" field="quantity" width="100px" className="centerClass" />
+                        <Column title="Total" editor="text" field="total" width="150px" className="centerClass" />
+                        <Column title="" editor="text" field="F" className="centerClass" />
+                        <Column title="" editor="text" field="G" width="100px" className="centerClass"/>
+                        <Column title="" editor="text" field="H" width="100px" className="centerClass"/>
                     </Grid>
                 </Paper>
                 </Widget>

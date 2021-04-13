@@ -278,11 +278,14 @@ export default function Users() {
       var id = 0;
       var temp = {};
       query.forEach((doc) => {
-        temp = {};
-        id++;
-        temp =  doc.data();
-        temp.id = id.toString();
-        data.push(temp);
+        // if(doc.data().role != "admin"){
+          temp = {};
+          id++;
+          temp =  doc.data();
+          temp.id = id.toString();
+          data.push(temp);
+        // }
+        
       })
       updateCharacters(data)
       setLoading(false);
@@ -301,7 +304,7 @@ export default function Users() {
                 <Droppable droppableId="Chairman">
                 {(provided) => (
                       <>
-                      <Grid item xs={3} {...provided.droppableProps} ref={provided.innerRef}>
+                      <Grid item lg={3} md={6} sm={6} xs={12} {...provided.droppableProps} ref={provided.innerRef}>
                         <Widget title="Chairman Club">
                         <ul  {...provided.droppableProps} ref={provided.innerRef} style={{listStyleType:"none",padding:"1%"}}>
                           {characters.map((item, index) => {
@@ -327,7 +330,7 @@ export default function Users() {
                 <Droppable droppableId="Silver">
                 {(provided) => (
                       <>
-                      <Grid item xs={3} {...provided.droppableProps} ref={provided.innerRef}>
+                      <Grid item lg={3} md={6} sm={6} xs={12} {...provided.droppableProps} ref={provided.innerRef}>
                         <Widget title="Silver Club">
                         <ul  {...provided.droppableProps} ref={provided.innerRef} style={{listStyleType:"none",padding:"1%"}}>
                           {characters.map((item, index) => {
@@ -353,7 +356,7 @@ export default function Users() {
                 <Droppable droppableId="Bronze">
                 {(provided) => (
                       <>
-                      <Grid item xs={3} {...provided.droppableProps} ref={provided.innerRef}>
+                      <Grid item lg={3} md={6} sm={6} xs={12} {...provided.droppableProps} ref={provided.innerRef}>
                         <Widget title="Bronze Club">
                         <ul  {...provided.droppableProps} ref={provided.innerRef} style={{listStyleType:"none",padding:"1%"}}>
                           {characters.map((item, index) => {
@@ -379,7 +382,7 @@ export default function Users() {
                 <Droppable droppableId="Pending">
               {(provided) => (
                       <>
-                      <Grid item xs={3}  {...provided.droppableProps} ref={provided.innerRef}>
+                      <Grid item lg={3} md={6} sm={6} xs={12}  {...provided.droppableProps} ref={provided.innerRef}>
                         <Widget title="Pending">
                           <ul  {...provided.droppableProps} ref={provided.innerRef} style={{listStyleType:"none",padding:"1%"}}>
                           {characters.map((item, index) => {

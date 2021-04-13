@@ -44,14 +44,6 @@ const seller_structure = [
   { id: 0, label: "Calculator", link: "/app/calculator", icon: <AttachMoneyIcon /> },
   { id: 1, label: "Adders", link: "/app/adders", icon: <PlaylistAddIcon /> },
 ];
-// try {
-//   const decoded = jwt_decode(localStorage.getItem('token'),{ header: true })
-//   // valid token format
-// } catch(error) {
-//   // invalid token format
-// }
-// console.log("token",localStorage.getItem('token'));
-
 
 function Sidebar({ location }) {
   //

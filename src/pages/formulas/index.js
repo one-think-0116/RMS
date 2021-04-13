@@ -8,6 +8,7 @@ import {
   import Widget from "../../components/Widget/Widget";
   import { FirebaseContext } from '../../components/Firebase/context';
   import { useLoading, ThreeDots} from '@agney/react-loading';
+  import "./style.css"
   var calcData = {};
   export default function Formulas(){
     const { containerProps, indicatorEl } = useLoading({
@@ -350,35 +351,35 @@ import {
                         resizable={true}
                         editField="inEdit"
                         >
-                        <Column field="id" title="" width="50px" editable={false} locked={true}  />
-                        <Column title="A"  field="A" width="100px" />
-                        <Column title="B"  field="B" width="150px"/>
-                        <Column title="C"  field="C" width="150px"/>
-                        <Column title="D"  field="D" width="120px"/>
-                        <Column title="E"  field="E" width="120px"/>
-                        <Column title="F"  field="F" width="100px"/>
-                        <Column title="G"  field="G" width="100px"/>
-                        <Column title="H"  field="H" width="100px"/>
-                        <Column title="I"  field="I" width="100px"/>
-                        <Column title="J"  field="J" width="100px"/>
-                        <Column title="K"  field="K" width="100px"/>
-                        <Column title="L"  field="L" width="100px"/>
-                        <Column title="M"  field="M" width="100px"/>
-                        <Column title="N"  field="N" width="100px"/>
-                        <Column title="O"  field="O" width="100px"/>
-                        <Column title="P"  field="P" width="100px"/>
-                        <Column title="Q"  field="Q" width="100px"/>
-                        <Column title="R"  field="R" width="100px"/>
-                        <Column title="S"  field="S" width="100px"/>
-                        <Column title="T"  field="T" width="100px"/>
-                        <Column title="U"  field="U" width="100px"/>
-                        <Column title="V"  field="V" width="100px"/>
-                        <Column title="W"  field="W" width="100px"/>
-                        <Column title="X"  field="X" width="100px"/>
-                        <Column title="Y"  field="Y" width="100px"/>
-                        <Column title="Z"  field="Z" width="100px"/>
-                        <Column title="AA"  field="AA" width="100px"/>
-                        <Column title="AB"  field="AB" width="100px"/>
+                        <Column field="id" title="" width="50px" editable={false} locked={true} className="centerClass"  />
+                        <Column title="A"  field="A" width="100px" className="centerClass" />
+                        <Column title="B"  field="B" width="150px" className="centerClass"/>
+                        <Column title="C"  field="C" width="150px" className="centerClass"/>
+                        <Column title="D"  field="D" width="120px" className="centerClass"/>
+                        <Column title="E"  field="E" width="120px" className="centerClass"/>
+                        <Column title="F"  field="F" width="100px" className="centerClass"/>
+                        <Column title="G"  field="G" width="100px" className="centerClass"/>
+                        <Column title="H"  field="H" width="100px" className="centerClass"/>
+                        <Column title="I"  field="I" width="100px" className="centerClass"/>
+                        <Column title="J"  field="J" width="100px" className="centerClass"/>
+                        <Column title="K"  field="K" width="100px" className="centerClass"/>
+                        <Column title="L"  field="L" width="100px" className="centerClass"/>
+                        <Column title="M"  field="M" width="100px" className="centerClass"/>
+                        <Column title="N"  field="N" width="100px" className="centerClass"/>
+                        <Column title="O"  field="O" width="100px" className="centerClass"/>
+                        <Column title="P"  field="P" width="100px" className="centerClass"/>
+                        <Column title="Q"  field="Q" width="100px" className="centerClass"/>
+                        <Column title="R"  field="R" width="100px" className="centerClass"/>
+                        <Column title="S"  field="S" width="100px" className="centerClass"/>
+                        <Column title="T"  field="T" width="100px" className="centerClass"/>
+                        <Column title="U"  field="U" width="100px" className="centerClass"/>
+                        <Column title="V"  field="V" width="100px" className="centerClass"/>
+                        <Column title="W"  field="W" width="100px" className="centerClass"/>
+                        <Column title="X"  field="X" width="100px" className="centerClass"/>
+                        <Column title="Y"  field="Y" width="100px" className="centerClass"/>
+                        <Column title="Z"  field="Z" width="100px" className="centerClass"/>
+                        <Column title="AA"  field="AA" width="100px" className="centerClass"/>
+                        <Column title="AB"  field="AB" width="100px" className="centerClass"/>
                     </Grid>
                 </Paper>
             </Widget>

@@ -28,15 +28,17 @@ import Formulas from "../../pages/formulas";
 import Users from "../../pages/users";
 import Guide from "../../pages/guide";
 
+
 // context
 import { useLayoutState } from "../../context/LayoutContext";
+//jwt
+import jwt_decode from "jwt-decode";
 
 function Layout(props) {
   var classes = useStyles();
 
   // global
   var layoutState = useLayoutState();
-
   return (
     <div className={classes.root}>
         <>
@@ -50,22 +52,22 @@ function Layout(props) {
             <div className={classes.fakeToolbar} />
             <Switch>
               <Route path="/app/calculator" component={Calculator} />
-              <Route path="/app/dashboard" component={Dashboard} />
-              <Route path="/app/typography" component={Typography} />
-              <Route path="/app/tables" component={Tables} />
-              <Route path="/app/notifications" component={Notifications} />
               <Route path="/app/adders" component={Adder} />
-              <Route path="/app/formulas" component={Formulas} />
-              <Route path="/app/users" component={Users} />
-              <Route path="/app/guide" component={Guide} />
-              <Route
+              {/* <Route path="/app/typography" component={Typography} /> */}
+              {/* <Route path="/app/tables" component={Tables} /> */}
+              {/* <Route path="/app/notifications" component={Notifications} /> */}
+              <PrivateRoute path="/app/dashboard" component={Dashboard} />
+              <PrivateRoute path="/app/formulas" component={Formulas} />
+              <PrivateRoute path="/app/users" component={Users} />
+              <PrivateRoute path="/app/guide" component={Guide} />
+              {/* <Route
                 exact
                 path="/app/ui"
                 render={() => <Redirect to="/app/ui/icons" />}
               />
               <Route path="/app/ui/maps" component={Maps} />
               <Route path="/app/ui/icons" component={Icons} />
-              <Route path="/app/ui/charts" component={Charts} />
+              <Route path="/app/ui/charts" component={Charts} /> */}
             </Switch>
             
           </div>
@@ -73,5 +75,22 @@ function Layout(props) {
     </div>
   );
 }
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route {...rest} render={(props) => 
+    {
+      var decoded;
+      if(localStorage.getItem('token')){
+        decoded = jwt_decode(localStorage.getItem('token'))
+      }
+      return (
+        decoded.role === "admin"
+          ? <Component {...props} />
+          : <Redirect to={{
+              pathname: '/app/calculator',
+              state: { from: props.location }
+            }} />
+      )
+    }} />
+)
 
 export default withRouter(Layout);
