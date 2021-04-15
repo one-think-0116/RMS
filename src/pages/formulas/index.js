@@ -21,7 +21,8 @@ import {
     const [editField, setEditField] = React.useState(undefined);
     const [changes, setChanges] = React.useState(false);
     const getNum = (str) => {
-        var num;
+        if(typeof str === "string"){
+            var num;
             if(str.indexOf(",") > -1){
               var str_arr = str.split(",");
               var tempStr = "";
@@ -33,6 +34,11 @@ import {
               num = parseFloat(str)
             }
             return num;
+        }else
+        {
+            return str;
+        }
+        
       }
     
     const enterEdit = (dataItem, field) => {
@@ -51,6 +57,19 @@ import {
             ));
             // console.log(newdata)
           //formulas logic-------------------------------------------------------------------------------------------------------
+            newdata[3].A = parseFloat(newdata[3].A);
+            newdata[4].A = parseFloat(newdata[4].A);
+            newdata[3].B = parseFloat(newdata[3].B);
+            newdata[4].B = parseFloat(newdata[4].B);
+            newdata[3].D = parseFloat(newdata[3].D);
+            newdata[4].D = parseFloat(newdata[4].D);
+            calcData.C10 = parseFloat(getNum(calcData.C10));
+            calcData.C11 = parseFloat(getNum(calcData.C11));
+            calcData.C15 = parseFloat(getNum(calcData.C15));
+            calcData.C16 = parseFloat(getNum(calcData.C16));
+            calcData.C17 = parseFloat(getNum(calcData.C17));
+            calcData.C18 = parseFloat(getNum(calcData.C18));
+
             newdata[3].C = newdata[3].B / newdata[3].A * 100;
             newdata[4].C = newdata[4].B / newdata[4].A * 100;
             //E4=(D4+B4)/((A4/0.8))
@@ -68,44 +87,44 @@ import {
             newdata[6].I = newdata[4].I / (1 - parseFloat(calcData.C14.split("%"))/100);
             //K4=if(CALCULATOR!$C$8="Mission 345",CALCULATOR!C11,0)
             if(calcData.C8 === "Mission 345") newdata[3].K = calcData.C11;
-            else newdata[3].K = "0";
+            else newdata[3].K = 0;
             //K5=if(CALCULATOR!$C$8="REC 370",CALCULATOR!$C$11,0)
             if(calcData.C8 === "REC 370") newdata[4].K = calcData.C11;
-            else newdata[4].K = "0";
+            else newdata[4].K = 0;
             //L4=if(CALCULATOR!$C$8="Mission 345",CALCULATOR!$C$15,0)
             if(calcData.C8 === "Mission 345") newdata[3].L = calcData.C15;
-            else newdata[3].L = "0";
+            else newdata[3].L = 0;
             //L5=if(CALCULATOR!$C$8="REC 370",CALCULATOR!$C$15,0)
             if(calcData.C8 === "REC 370") newdata[4].L = calcData.C15;
-            else newdata[4].L = "0";
+            else newdata[4].L = 0;
             //M4=if(CALCULATOR!$C$8="Mission 345",-CALCULATOR!$C$16,0)
-            if(calcData.C8 === "Mission 345") newdata[3].M = "-" + calcData.C16;
-            else newdata[3].M = "0";
+            if(calcData.C8 === "Mission 345") newdata[3].M = -calcData.C16;
+            else newdata[3].M = 0;
             //M5=if(CALCULATOR!$C$8="REC 370",-CALCULATOR!$C$16,0)
-            if(calcData.C8 === "REC 370") newdata[4].M = "-" + calcData.C16;
-            else newdata[4].M = "0";
+            if(calcData.C8 === "REC 370") newdata[4].M = -calcData.C16;
+            else newdata[4].M = 0;
             //N4=if(CALCULATOR!$C$8="Mission 345",-CALCULATOR!$C$17,0)
-            if(calcData.C8 === "Mission 345") newdata[3].N = "-" + calcData.C17;
-            else newdata[3].N = "0";
+            if(calcData.C8 === "Mission 345") newdata[3].N = -calcData.C17;
+            else newdata[3].N = 0;
             //N5=if(CALCULATOR!$C$8="REC 370",-CALCULATOR!$C$17,0)
-            if(calcData.C8 === "REC 370") newdata[4].N = "-" + calcData.C17;
-            else newdata[4].N = "0";
+            if(calcData.C8 === "REC 370") newdata[4].N = -calcData.C17;
+            else newdata[4].N = 0;
             //O4=if(CALCULATOR!$C$8="Mission 345",-CALCULATOR!$C$18,0)
-            if(calcData.C8 === "Mission 345") newdata[3].O = "-" + calcData.C18;
-            else newdata[3].O = "0";
+            if(calcData.C8 === "Mission 345") newdata[3].O = -calcData.C18;
+            else newdata[3].O = 0;
             //O5=if(CALCULATOR!$C$8="REC 370",-CALCULATOR!$C$18,0)
-            if(calcData.C8 === "REC 370") newdata[4].O = "-" + calcData.C18;
-            else newdata[4].O = "0";
+            if(calcData.C8 === "REC 370") newdata[4].O = -calcData.C18;
+            else newdata[4].O = 0;
             //Q4=sum(L4:O4)
-            newdata[3].Q = (parseFloat(getNum(newdata[3].L))+parseFloat(getNum(newdata[3].M))+parseFloat(getNum(newdata[3].N))+parseFloat(getNum(newdata[3].O))).toString();
+            newdata[3].Q = (parseFloat(getNum(newdata[3].L))+parseFloat(getNum(newdata[3].M))+parseFloat(getNum(newdata[3].N))+parseFloat(getNum(newdata[3].O)));
             //Q5=sum(L5:O5)
-            newdata[4].Q = (parseFloat(getNum(newdata[4].L))+parseFloat(getNum(newdata[4].M))+parseFloat(getNum(newdata[4].N))+parseFloat(getNum(newdata[4].O))).toString();
+            newdata[4].Q = (parseFloat(getNum(newdata[4].L))+parseFloat(getNum(newdata[4].M))+parseFloat(getNum(newdata[4].N))+parseFloat(getNum(newdata[4].O)));
             //S4=IF(Q4>0,Q4/H4,0)
-            if(parseFloat(getNum(newdata[3].Q)) > 0) newdata[3].S = (parseFloat(getNum(newdata[3].Q))/parseFloat(getNum(newdata[3].H))).toString();
-            else newdata[3].S = "0";
+            if(parseFloat(getNum(newdata[3].Q)) > 0) newdata[3].S = (parseFloat(getNum(newdata[3].Q))/parseFloat(getNum(newdata[3].H)));
+            else newdata[3].S = 0;
             //S5=IF(Q5>0,Q5/H5,0)
-            if(parseFloat(getNum(newdata[4].Q)) > 0) newdata[4].S = (parseFloat(getNum(newdata[4].Q))/parseFloat(getNum(newdata[4].H))).toString();
-            else newdata[4].S = "0";
+            if(parseFloat(getNum(newdata[4].Q)) > 0) newdata[4].S = (parseFloat(getNum(newdata[4].Q))/parseFloat(getNum(newdata[4].H)));
+            else newdata[4].S = 0;
             //S8=IF(S4<I4,"REFUSED","ACCEPTED")
             if(parseFloat(getNum(newdata[3].S)) < parseFloat(getNum(newdata[3].I))) newdata[7].S = "REFUSED";
             else newdata[7].S = "ACCEPTED";
@@ -113,51 +132,50 @@ import {
             if(parseFloat(getNum(newdata[4].S)) < parseFloat(getNum(newdata[4].I))) newdata[8].S = "REFUSED";
             else newdata[8].S = "ACCEPTED";
             //T4=IF(S4>I4,S4-I4,0)
-            if(parseFloat(getNum(newdata[3].S)) > parseFloat(getNum(newdata[3].I))) newdata[3].T = (parseFloat(getNum(newdata[3].S)) - parseFloat(getNum(newdata[3].I))).toString();
-            else newdata[3].T = "0";
+            if(parseFloat(getNum(newdata[3].S)) > parseFloat(getNum(newdata[3].I))) newdata[3].T = (parseFloat(getNum(newdata[3].S)) - parseFloat(getNum(newdata[3].I)));
+            else newdata[3].T = 0;
             //T5=IF(S5>0,S5-I5,0)
-            if(parseFloat(getNum(newdata[4].S)) > parseFloat(getNum(newdata[4].I))) newdata[4].T = (parseFloat(getNum(newdata[4].S)) - parseFloat(getNum(newdata[4].I))).toString();
-            else newdata[4].T = "0";
+            if(parseFloat(getNum(newdata[4].S)) > parseFloat(getNum(newdata[4].I))) newdata[4].T = (parseFloat(getNum(newdata[4].S)) - parseFloat(getNum(newdata[4].I)));
+            else newdata[4].T = 0;
             //U4=IF(T4>=0,IF(CALCULATOR!$C$6="Bronze",T4*$Z$7,IF(CALCULATOR!$C$6="Silver",T4*$Z$8,T4*$Z$9)))
             if(parseFloat(getNum(newdata[3].T)) >=0){
-                if(calcData.C6 === "Bronze") newdata[3].U =(parseFloat(getNum(newdata[3].T))*parseFloat(newdata[6].Z.split("%")[0])/100).toString();
+                if(calcData.C6 === "Bronze") newdata[3].U =(parseFloat(getNum(newdata[3].T))*parseFloat(newdata[6].Z.split("%")[0])/100);
                 else{
-                    if(calcData.C6 === "Silver") newdata[3].U =(parseFloat(getNum(newdata[3].T))*parseFloat(newdata[7].Z.split("%")[0])/100).toString();
-                    else newdata[3].U =(parseFloat(getNum(newdata[3].T))*parseFloat(newdata[8].Z.split("%")[0])/100).toString();
+                    if(calcData.C6 === "Silver") newdata[3].U =(parseFloat(getNum(newdata[3].T))*parseFloat(newdata[7].Z.split("%")[0])/100);
+                    else newdata[3].U =(parseFloat(getNum(newdata[3].T))*parseFloat(newdata[8].Z.split("%")[0])/100);
                 }
             }
             //U5=IF(T5>=0,IF(CALCULATOR!$C$6="Bronze",T5*$Z$7,IF(CALCULATOR!$C$6="Silver",T5*$Z$8,T5*$Z$9)))
             if(parseFloat(getNum(newdata[4].T)) >=0){
-                if(calcData.C6 === "Bronze") newdata[4].U =(parseFloat(getNum(newdata[4].T))*parseFloat(newdata[6].Z.split("%")[0])/100).toString();
+                if(calcData.C6 === "Bronze") newdata[4].U =(parseFloat(getNum(newdata[4].T))*parseFloat(newdata[6].Z.split("%")[0])/100);
                 else{
-                    if(calcData.C6 === "Silver") newdata[4].U =(parseFloat(getNum(newdata[4].T))*parseFloat(newdata[7].Z.split("%")[0])/100).toString();
-                    else newdata[4].U =(parseFloat(getNum(newdata[4].T))*parseFloat(newdata[8].Z.split("%")[0])/100).toString();
+                    if(calcData.C6 === "Silver") newdata[4].U =(parseFloat(getNum(newdata[4].T))*parseFloat(newdata[7].Z.split("%")[0])/100);
+                    else newdata[4].U =(parseFloat(getNum(newdata[4].T))*parseFloat(newdata[8].Z.split("%")[0])/100);
                 }
             }
             //V4=IF(+S4>=I4,B4*H4,0)
-            if(parseFloat(getNum(newdata[3].S)) >= parseFloat(getNum(newdata[3].I))) newdata[3].V = ((parseFloat(getNum(newdata[3].B)))*(parseFloat(getNum(newdata[3].H)))).toString();
-            else newdata[3].V = "0";
+            if(parseFloat(getNum(newdata[3].S)) >= parseFloat(getNum(newdata[3].I))) newdata[3].V = ((parseFloat(getNum(newdata[3].B)))*(parseFloat(getNum(newdata[3].H))));
+            else newdata[3].V = 0;
             //V5=IF(S5>I5,B5*H5,0)
-            if(parseFloat(getNum(newdata[4].S)) > parseFloat(getNum(newdata[4].I))) newdata[4].V = ((parseFloat(getNum(newdata[4].B)))*(parseFloat(getNum(newdata[4].H)))).toString();
-            else newdata[4].V = "0";
+            if(parseFloat(getNum(newdata[4].S)) > parseFloat(getNum(newdata[4].I))) newdata[4].V = ((parseFloat(getNum(newdata[4].B)))*(parseFloat(getNum(newdata[4].H))));
+            else newdata[4].V = 0;
             //Y4=IF(CALCULATOR!$C$7="Self Gen",D4*H4,0)
-            if(calcData.C7 === "Self Gen") newdata[3].Y = ((parseFloat(getNum(newdata[3].D)))*(parseFloat(getNum(newdata[3].H)))).toString();
-            else newdata[3].Y = "0";
+            if(calcData.C7 === "Self Gen") newdata[3].Y = ((parseFloat(getNum(newdata[3].D)))*(parseFloat(getNum(newdata[3].H))));
+            else newdata[3].Y = 0;
             //Y5=IF(CALCULATOR!$C$7="Self Gen",D5*H5,0)
-            if(calcData.C7 === "Self Gen") newdata[4].Y = ((parseFloat(getNum(newdata[4].D)))*(parseFloat(getNum(newdata[4].H)))).toString();
-            else newdata[4].Y = "0";
+            if(calcData.C7 === "Self Gen") newdata[4].Y = ((parseFloat(getNum(newdata[4].D)))*(parseFloat(getNum(newdata[4].H))));
+            else newdata[4].Y = 0;
             //Z4=U4*H4
-            newdata[3].Z = ((parseFloat(getNum(newdata[3].U)))*(parseFloat(getNum(newdata[3].H)))).toString();
+            newdata[3].Z = ((parseFloat(getNum(newdata[3].U)))*(parseFloat(getNum(newdata[3].H))));
             //Z5=U5*H5
-            newdata[4].Z = ((parseFloat(getNum(newdata[4].U)))*(parseFloat(getNum(newdata[4].H)))).toString();
+            newdata[4].Z = ((parseFloat(getNum(newdata[4].U)))*(parseFloat(getNum(newdata[4].H))));
             //AA4=sum(V4:Z4)
-            newdata[3].AA = ((parseFloat(getNum(newdata[3].V)))+(parseFloat(getNum(newdata[3].Y)))+(parseFloat(getNum(newdata[3].Z)))).toString();
+            newdata[3].AA = ((parseFloat(getNum(newdata[3].V)))+(parseFloat(getNum(newdata[3].Y)))+(parseFloat(getNum(newdata[3].Z))));
             //AA5=sum(V5:Z5)
-            newdata[4].AA = ((parseFloat(getNum(newdata[4].V)))+(parseFloat(getNum(newdata[4].Y)))+(parseFloat(getNum(newdata[4].Z)))).toString();
+            newdata[4].AA = ((parseFloat(getNum(newdata[4].V)))+(parseFloat(getNum(newdata[4].Y)))+(parseFloat(getNum(newdata[4].Z))));
 
             setData(newdata);
             setEditField(undefined);
-
             //database ------------------------------------------------------------------------------------------------------------
 
             firebase.firestore().collection("formulas")
@@ -198,7 +216,10 @@ import {
         const newdata = data.map(item => {
             var temp = {};
             var key = event.dataItem[event.field];
+            if(isNaN(event.value))
             temp[key] = event.value;
+            else
+            temp[key] = parseFloat(event.value);
             return {...item,temp};
             }
         );
@@ -216,6 +237,18 @@ import {
                 query1.forEach((doc1) => {
                     calcData = doc1.data();
                     //formulas logic-------------------------------------------------------------------------------------------------------
+                    dbData[3].A = parseFloat(dbData[3].A);
+                    dbData[4].A = parseFloat(dbData[4].A);
+                    dbData[3].B = parseFloat(dbData[3].B);
+                    dbData[4].B = parseFloat(dbData[4].B);
+                    dbData[3].D = parseFloat(dbData[3].D);
+                    dbData[4].D = parseFloat(dbData[4].D);
+                    calcData.C10 = parseFloat(getNum(calcData.C10));
+                    calcData.C11 = parseFloat(getNum(calcData.C11));
+                    calcData.C15 = parseFloat(getNum(calcData.C15));
+                    calcData.C16 = parseFloat(getNum(calcData.C16));
+                    calcData.C17 = parseFloat(getNum(calcData.C17));
+                    calcData.C18 = parseFloat(getNum(calcData.C18));
                     dbData[3].C = dbData[3].B / dbData[3].A * 100;
                     dbData[4].C = dbData[4].B / dbData[4].A * 100;
                     //E4=(D4+B4)/((A4/0.8))
@@ -233,44 +266,44 @@ import {
                     dbData[6].I = dbData[4].I / (1 - parseFloat(calcData.C14.split("%"))/100);
                     //K4=if(CALCULATOR!$C$8="Mission 345",CALCULATOR!C11,0)
                     if(calcData.C8 === "Mission 345") dbData[3].K = calcData.C11;
-                    else dbData[3].K = "0";
+                    else dbData[3].K = 0;
                     //K5=if(CALCULATOR!$C$8="REC 370",CALCULATOR!$C$11,0)
                     if(calcData.C8 === "REC 370") dbData[4].K = calcData.C11;
-                    else dbData[4].K = "0";
+                    else dbData[4].K = 0;
                     //L4=if(CALCULATOR!$C$8="Mission 345",CALCULATOR!$C$15,0)
                     if(calcData.C8 === "Mission 345") dbData[3].L = calcData.C15;
-                    else dbData[3].L = "0";
+                    else dbData[3].L = 0;
                     //L5=if(CALCULATOR!$C$8="REC 370",CALCULATOR!$C$15,0)
                     if(calcData.C8 === "REC 370") dbData[4].L = calcData.C15;
-                    else dbData[4].L = "0";
+                    else dbData[4].L = 0;
                     //M4=if(CALCULATOR!$C$8="Mission 345",-CALCULATOR!$C$16,0)
-                    if(calcData.C8 === "Mission 345") dbData[3].M = "-" + calcData.C16;
-                    else dbData[3].M = "0";
+                    if(calcData.C8 === "Mission 345") dbData[3].M = -calcData.C16;
+                    else dbData[3].M = 0;
                     //M5=if(CALCULATOR!$C$8="REC 370",-CALCULATOR!$C$16,0)
-                    if(calcData.C8 === "REC 370") dbData[4].M = "-" + calcData.C16;
-                    else dbData[4].M = "0";
+                    if(calcData.C8 === "REC 370") dbData[4].M = -calcData.C16;
+                    else dbData[4].M = 0;
                     //N4=if(CALCULATOR!$C$8="Mission 345",-CALCULATOR!$C$17,0)
-                    if(calcData.C8 === "Mission 345") dbData[3].N = "-" + calcData.C17;
-                    else dbData[3].N = "0";
+                    if(calcData.C8 === "Mission 345") dbData[3].N = -calcData.C17;
+                    else dbData[3].N = 0;
                     //N5=if(CALCULATOR!$C$8="REC 370",-CALCULATOR!$C$17,0)
-                    if(calcData.C8 === "REC 370") dbData[4].N = "-" + calcData.C17;
-                    else dbData[4].N = "0";
+                    if(calcData.C8 === "REC 370") dbData[4].N = -calcData.C17;
+                    else dbData[4].N = 0;
                     //O4=if(CALCULATOR!$C$8="Mission 345",-CALCULATOR!$C$18,0)
-                    if(calcData.C8 === "Mission 345") dbData[3].O = "-" + calcData.C18;
-                    else dbData[3].O = "0";
+                    if(calcData.C8 === "Mission 345") dbData[3].O = -calcData.C18;
+                    else dbData[3].O = 0;
                     //O5=if(CALCULATOR!$C$8="REC 370",-CALCULATOR!$C$18,0)
-                    if(calcData.C8 === "REC 370") dbData[4].O = "-" + calcData.C18;
-                    else dbData[4].O = "0";
+                    if(calcData.C8 === "REC 370") dbData[4].O = -calcData.C18;
+                    else dbData[4].O = 0;
                     //Q4=sum(L4:O4)
-                    dbData[3].Q = (parseFloat(getNum(dbData[3].L))+parseFloat(getNum(dbData[3].M))+parseFloat(getNum(dbData[3].N))+parseFloat(getNum(dbData[3].O))).toString();
+                    dbData[3].Q = (parseFloat(getNum(dbData[3].L))+parseFloat(getNum(dbData[3].M))+parseFloat(getNum(dbData[3].N))+parseFloat(getNum(dbData[3].O)));
                     //Q5=sum(L5:O5)
-                    dbData[4].Q = (parseFloat(getNum(dbData[4].L))+parseFloat(getNum(dbData[4].M))+parseFloat(getNum(dbData[4].N))+parseFloat(getNum(dbData[4].O))).toString();
+                    dbData[4].Q = (parseFloat(getNum(dbData[4].L))+parseFloat(getNum(dbData[4].M))+parseFloat(getNum(dbData[4].N))+parseFloat(getNum(dbData[4].O)));
                     //S4=IF(Q4>0,Q4/H4,0)
-                    if(parseFloat(getNum(dbData[3].Q)) > 0) dbData[3].S = (parseFloat(getNum(dbData[3].Q))/parseFloat(getNum(dbData[3].H))).toString();
-                    else dbData[3].S = "0";
+                    if(parseFloat(getNum(dbData[3].Q)) > 0) dbData[3].S = (parseFloat(getNum(dbData[3].Q))/parseFloat(getNum(dbData[3].H)));
+                    else dbData[3].S = 0;
                     //S5=IF(Q5>0,Q5/H5,0)
-                    if(parseFloat(getNum(dbData[4].Q)) > 0) dbData[4].S = (parseFloat(getNum(dbData[4].Q))/parseFloat(getNum(dbData[4].H))).toString();
-                    else dbData[4].S = "0";
+                    if(parseFloat(getNum(dbData[4].Q)) > 0) dbData[4].S = (parseFloat(getNum(dbData[4].Q))/parseFloat(getNum(dbData[4].H)));
+                    else dbData[4].S = 0;
                     //S8=IF(S4<I4,"REFUSED","ACCEPTED")
                     if(parseFloat(getNum(dbData[3].S)) < parseFloat(getNum(dbData[3].I))) dbData[7].S = "REFUSED";
                     else dbData[7].S = "ACCEPTED";
@@ -278,48 +311,47 @@ import {
                     if(parseFloat(getNum(dbData[4].S)) < parseFloat(getNum(dbData[4].I))) dbData[8].S = "REFUSED";
                     else dbData[8].S = "ACCEPTED";
                     //T4=IF(S4>I4,S4-I4,0)
-                    if(parseFloat(getNum(dbData[3].S)) > parseFloat(getNum(dbData[3].I))) dbData[3].T = (parseFloat(getNum(dbData[3].S)) - parseFloat(getNum(dbData[3].I))).toString();
-                    else dbData[3].T = "0";
+                    if(parseFloat(getNum(dbData[3].S)) > parseFloat(getNum(dbData[3].I))) dbData[3].T = (parseFloat(getNum(dbData[3].S)) - parseFloat(getNum(dbData[3].I)));
+                    else dbData[3].T = 0;
                     //T5=IF(S5>0,S5-I5,0)
-                    if(parseFloat(getNum(dbData[4].S)) > parseFloat(getNum(dbData[4].I))) dbData[4].T = (parseFloat(getNum(dbData[4].S)) - parseFloat(getNum(dbData[4].I))).toString();
-                    else dbData[4].T = "0";
+                    if(parseFloat(getNum(dbData[4].S)) > parseFloat(getNum(dbData[4].I))) dbData[4].T = (parseFloat(getNum(dbData[4].S)) - parseFloat(getNum(dbData[4].I)));
+                    else dbData[4].T = 0;
                     //U4=IF(T4>=0,IF(CALCULATOR!$C$6="Bronze",T4*$Z$7,IF(CALCULATOR!$C$6="Silver",T4*$Z$8,T4*$Z$9)))
                     if(parseFloat(getNum(dbData[3].T)) >=0){
-                        if(calcData.C6 === "Bronze") dbData[3].U =(parseFloat(getNum(dbData[3].T))*parseFloat(dbData[6].Z.split("%")[0])/100).toString();
+                        if(calcData.C6 === "Bronze") dbData[3].U =(parseFloat(getNum(dbData[3].T))*parseFloat(dbData[6].Z.split("%")[0])/100);
                         else{
-                            if(calcData.C6 === "Silver") dbData[3].U =(parseFloat(getNum(dbData[3].T))*parseFloat(dbData[7].Z.split("%")[0])/100).toString();
-                            else dbData[3].U =(parseFloat(getNum(dbData[3].T))*parseFloat(dbData[8].Z.split("%")[0])/100).toString();
+                            if(calcData.C6 === "Silver") dbData[3].U =(parseFloat(getNum(dbData[3].T))*parseFloat(dbData[7].Z.split("%")[0])/100);
+                            else dbData[3].U =(parseFloat(getNum(dbData[3].T))*parseFloat(dbData[8].Z.split("%")[0])/100);
                         }
                     }
                     //U5=IF(T5>=0,IF(CALCULATOR!$C$6="Bronze",T5*$Z$7,IF(CALCULATOR!$C$6="Silver",T5*$Z$8,T5*$Z$9)))
                     if(parseFloat(getNum(dbData[4].T)) >=0){
-                        if(calcData.C6 === "Bronze") dbData[4].U =(parseFloat(getNum(dbData[4].T))*parseFloat(dbData[6].Z.split("%")[0])/100).toString();
+                        if(calcData.C6 === "Bronze") dbData[4].U =(parseFloat(getNum(dbData[4].T))*parseFloat(dbData[6].Z.split("%")[0])/100);
                         else{
-                            if(calcData.C6 === "Silver") dbData[4].U =(parseFloat(getNum(dbData[4].T))*parseFloat(dbData[7].Z.split("%")[0])/100).toString();
-                            else dbData[4].U =(parseFloat(getNum(dbData[4].T))*parseFloat(dbData[8].Z.split("%")[0])/100).toString();
+                            if(calcData.C6 === "Silver") dbData[4].U =(parseFloat(getNum(dbData[4].T))*parseFloat(dbData[7].Z.split("%")[0])/100);
+                            else dbData[4].U =(parseFloat(getNum(dbData[4].T))*parseFloat(dbData[8].Z.split("%")[0])/100);
                         }
                     }
                     //V4=IF(+S4>=I4,B4*H4,0)
-                    if(parseFloat(getNum(dbData[3].S)) >= parseFloat(getNum(dbData[3].I))) dbData[3].V = ((parseFloat(getNum(dbData[3].B)))*(parseFloat(getNum(dbData[3].H)))).toString();
-                    else dbData[3].V = "0";
+                    if(parseFloat(getNum(dbData[3].S)) >= parseFloat(getNum(dbData[3].I))) dbData[3].V = ((parseFloat(getNum(dbData[3].B)))*(parseFloat(getNum(dbData[3].H))));
+                    else dbData[3].V = 0;
                     //V5=IF(S5>I5,B5*H5,0)
-                    if(parseFloat(getNum(dbData[4].S)) > parseFloat(getNum(dbData[4].I))) dbData[4].V = ((parseFloat(getNum(dbData[4].B)))*(parseFloat(getNum(dbData[4].H)))).toString();
-                    else dbData[4].V = "0";
+                    if(parseFloat(getNum(dbData[4].S)) > parseFloat(getNum(dbData[4].I))) dbData[4].V = ((parseFloat(getNum(dbData[4].B)))*(parseFloat(getNum(dbData[4].H))));
+                    else dbData[4].V = 0;
                     //Y4=IF(CALCULATOR!$C$7="Self Gen",D4*H4,0)
-                    if(calcData.C7 === "Self Gen") dbData[3].Y = ((parseFloat(getNum(dbData[3].D)))*(parseFloat(getNum(dbData[3].H)))).toString();
-                    else dbData[3].Y = "0";
+                    if(calcData.C7 === "Self Gen") dbData[3].Y = ((parseFloat(getNum(dbData[3].D)))*(parseFloat(getNum(dbData[3].H))));
+                    else dbData[3].Y = 0;
                     //Y5=IF(CALCULATOR!$C$7="Self Gen",D5*H5,0)
-                    if(calcData.C7 === "Self Gen") dbData[4].Y = ((parseFloat(getNum(dbData[4].D)))*(parseFloat(getNum(dbData[4].H)))).toString();
-                    else dbData[4].Y = "0";
+                    if(calcData.C7 === "Self Gen") dbData[4].Y = ((parseFloat(getNum(dbData[4].D)))*(parseFloat(getNum(dbData[4].H))));
+                    else dbData[4].Y = 0;
                     //Z4=U4*H4
-                    dbData[3].Z = ((parseFloat(getNum(dbData[3].U)))*(parseFloat(getNum(dbData[3].H)))).toString();
+                    dbData[3].Z = ((parseFloat(getNum(dbData[3].U)))*(parseFloat(getNum(dbData[3].H))));
                     //Z5=U5*H5
-                    dbData[4].Z = ((parseFloat(getNum(dbData[4].U)))*(parseFloat(getNum(dbData[4].H)))).toString();
+                    dbData[4].Z = ((parseFloat(getNum(dbData[4].U)))*(parseFloat(getNum(dbData[4].H))));
                     //AA4=sum(V4:Z4)
-                    dbData[3].AA = ((parseFloat(getNum(dbData[3].V)))+(parseFloat(getNum(dbData[3].Y)))+(parseFloat(getNum(dbData[3].Z)))).toString();
+                    dbData[3].AA = ((parseFloat(getNum(dbData[3].V)))+(parseFloat(getNum(dbData[3].Y)))+(parseFloat(getNum(dbData[3].Z))));
                     //AA5=sum(V5:Z5)
-                    dbData[4].AA = ((parseFloat(getNum(dbData[4].V)))+(parseFloat(getNum(dbData[4].Y)))+(parseFloat(getNum(dbData[4].Z)))).toString();
-
+                    dbData[4].AA = ((parseFloat(getNum(dbData[4].V)))+(parseFloat(getNum(dbData[4].Y)))+(parseFloat(getNum(dbData[4].Z))));
                     setData(dbData);
                     setLoading(false);
                 })
@@ -352,34 +384,34 @@ import {
                         editField="inEdit"
                         >
                         <Column field="id" title="" width="50px" editable={false} locked={true} className="centerClass"  />
-                        <Column title="A"  field="A" width="100px" className="centerClass" />
-                        <Column title="B"  field="B" width="150px" className="centerClass"/>
-                        <Column title="C"  field="C" width="150px" className="centerClass"/>
-                        <Column title="D"  field="D" width="120px" className="centerClass"/>
-                        <Column title="E"  field="E" width="120px" className="centerClass"/>
+                        <Column title="A"  field="A" width="100px" className="centerClass"  format="{0:c}"/>
+                        <Column title="B"  field="B" width="150px" className="centerClass" format="{0:c}"/>
+                        <Column title="C"  field="C" width="150px" className="centerClass" format="{0:#,0.0\%}"/>
+                        <Column title="D"  field="D" width="120px" className="centerClass" format="{0:c}"/>
+                        <Column title="E"  field="E" width="120px" className="centerClass" format="{0:#,0.0\%}"/>
                         <Column title="F"  field="F" width="100px" className="centerClass"/>
                         <Column title="G"  field="G" width="100px" className="centerClass"/>
-                        <Column title="H"  field="H" width="100px" className="centerClass"/>
-                        <Column title="I"  field="I" width="100px" className="centerClass"/>
-                        <Column title="J"  field="J" width="100px" className="centerClass"/>
-                        <Column title="K"  field="K" width="100px" className="centerClass"/>
-                        <Column title="L"  field="L" width="100px" className="centerClass"/>
-                        <Column title="M"  field="M" width="100px" className="centerClass"/>
-                        <Column title="N"  field="N" width="100px" className="centerClass"/>
-                        <Column title="O"  field="O" width="100px" className="centerClass"/>
-                        <Column title="P"  field="P" width="100px" className="centerClass"/>
-                        <Column title="Q"  field="Q" width="100px" className="centerClass"/>
-                        <Column title="R"  field="R" width="100px" className="centerClass"/>
-                        <Column title="S"  field="S" width="100px" className="centerClass"/>
-                        <Column title="T"  field="T" width="100px" className="centerClass"/>
-                        <Column title="U"  field="U" width="100px" className="centerClass"/>
-                        <Column title="V"  field="V" width="100px" className="centerClass"/>
-                        <Column title="W"  field="W" width="100px" className="centerClass"/>
-                        <Column title="X"  field="X" width="100px" className="centerClass"/>
-                        <Column title="Y"  field="Y" width="100px" className="centerClass"/>
-                        <Column title="Z"  field="Z" width="100px" className="centerClass"/>
-                        <Column title="AA"  field="AA" width="100px" className="centerClass"/>
-                        <Column title="AB"  field="AB" width="100px" className="centerClass"/>
+                        <Column title="H"  field="H" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="I"  field="I" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="J"  field="J" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="K"  field="K" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="L"  field="L" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="M"  field="M" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="N"  field="N" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="O"  field="O" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="P"  field="P" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="Q"  field="Q" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="R"  field="R" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="S"  field="S" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="T"  field="T" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="U"  field="U" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="V"  field="V" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="W"  field="W" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="X"  field="X" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="Y"  field="Y" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="Z"  field="Z" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="AA"  field="AA" width="100px" className="centerClass" format="{0:c}"/>
+                        <Column title="AB"  field="AB" width="100px" className="centerClass" format="{0:c}"/>
                     </Grid>
                 </Paper>
             </Widget>

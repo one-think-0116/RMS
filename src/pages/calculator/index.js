@@ -190,7 +190,8 @@ export default function Calculator() {
     }
   };
   const getNum = (str) => {
-    var num;
+    if(typeof str === "string"){
+        var num;
         if(str.indexOf(",") > -1){
           var str_arr = str.split(",");
           var tempStr = "";
@@ -202,6 +203,11 @@ export default function Calculator() {
           num = parseFloat(str)
         }
         return num;
+    }else
+    {
+        return str;
+    }
+    
   }
 
 
