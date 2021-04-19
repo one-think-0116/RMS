@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site":"rmscommission",
+    "site":"rms-cm",
     "public": "Build",
     "ignore": [
       "firebase.json",

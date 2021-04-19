@@ -34,14 +34,12 @@ This is a limited version of [**Full React Material Admin**](https://flatlogic.c
 We have implemented some basic pages, so you can see our template in action.
 
 - Dashboard
-- Typography
-- Tables
-- Notifications
-- Charts
-- Icons
-- Maps
-- Login
-- Error
+- Calculator
+- Adder
+- Formulas
+- Users
+- Guide
+
 
 ## Quick Start
 

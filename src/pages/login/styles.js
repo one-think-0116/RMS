@@ -20,11 +20,9 @@ export default makeStyles(theme => ({
     justifyContent: "center",
     alignItems: "center",
     [theme.breakpoints.down("md")]: {
-      width: "50%",
+      width: "100%",
     },
-    [theme.breakpoints.down("md")]: {
-      display: "none",
-    },
+    
   },
   logotypeImage: {
     width: 165,
@@ -34,6 +32,7 @@ export default makeStyles(theme => ({
     color: "white",
     fontWeight: 500,
     fontSize: 84,
+    textAlign:"center",
     [theme.breakpoints.down("md")]: {
       fontSize: 48,
     },

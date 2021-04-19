@@ -59,12 +59,10 @@ export default function Adder(){
           className: classes.notification,
         });
     }
-    const CloseButton = ({ closeToast, className }) => {
-        return <CloseIcon className={className} onClick={closeToast} />;
-        }
           
     //#####################################toast########################################################
     const enterEdit = (dataItem, field) => {
+        console.log("123")
         const newdata = data.map(item => ({
                 ...item,
                 inEdit: item.id === dataItem.id ? field : undefined
@@ -177,6 +175,7 @@ export default function Adder(){
                         navigatable={true}
                         resizable={true}
                         editField="inEdit"
+                        mobile = {true}
                         >
                         <Column field="id" title="Id" width="50px" editable={false} auto locked={true} className="centerClass"/>
                         <Column title="Adders"  field="adders" width="500px" className="centerClass" />

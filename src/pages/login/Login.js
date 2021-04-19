@@ -102,7 +102,7 @@ function Login(props) {
             onClick={login
             }
             variant="contained"
-            color="primary"
+            color="secondary"
             size="large"
           >
             Login
