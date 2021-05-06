@@ -190,6 +190,7 @@ import {
                         const {temp,inEdit,...ndata} = item;
                         updateData.data.push(ndata);
                     })
+
                     var formulasRef = firebase.database().ref('MINIFORMULAS');
                     var obj = {};
                     obj.A4 = newdata[3].A;
@@ -204,8 +205,34 @@ import {
                     obj.Z8 = newdata[7].Z;
                     obj.Z9 = newdata[8].Z;
                     formulasRef.update(obj);
+
                     firebase.firestore().collection("formulas").doc(docs[0].id).update(updateData).then(() => {
                         console.log("formulas Document successfully update!");
+                    })
+                }else{
+                    var updateData = {};
+                    updateData.data = [];
+                    newdata.map((item) => {
+                        const {temp,inEdit,...ndata} = item;
+                        updateData.data.push(ndata);
+                    })
+                    var formulasRef = firebase.database().ref('MINIFORMULAS');
+                    var obj = {};
+                    obj.A4 = newdata[3].A;
+                    obj.A5 = newdata[4].A;
+                    obj.B4 = newdata[3].B;
+                    obj.B5 = newdata[4].B;
+                    obj.D4 = newdata[3].D;
+                    obj.D5 = newdata[4].D;
+                    obj.F4 = newdata[3].F;
+                    obj.F5 = newdata[4].F;
+                    obj.Z7 = newdata[6].Z;
+                    obj.Z8 = newdata[7].Z;
+                    obj.Z9 = newdata[8].Z;
+                    formulasRef.set(obj);
+
+                    firebase.firestore().collection("formulas").add(updateData).then(() => {
+                        console.log("formulas Document successfully aadd!");
                     })
                 }
             })
@@ -229,134 +256,155 @@ import {
     const renderers =  new Renderers(enterEdit, exitEdit, 'inEdit');
     React.useEffect(() => {
         firebase.firestore().collection("formulas").get().then((query) => {
-            query.forEach((doc) => {
-                var dbData = doc.data().data;
+            if(query.docs.length === 1){
+                query.forEach((doc) => {
+                    console.log("doc",doc)
+                    var dbData = doc.data().data;
+                    
                 
-              
-              firebase.firestore().collection("calculators").where("email","==",localStorage.getItem("email")).get().then((query1) => {
-                query1.forEach((doc1) => {
-                    calcData = doc1.data();
-                    //formulas logic-------------------------------------------------------------------------------------------------------
-                    dbData[3].A = parseFloat(dbData[3].A);
-                    dbData[4].A = parseFloat(dbData[4].A);
-                    dbData[3].B = parseFloat(dbData[3].B);
-                    dbData[4].B = parseFloat(dbData[4].B);
-                    dbData[3].D = parseFloat(dbData[3].D);
-                    dbData[4].D = parseFloat(dbData[4].D);
-                    calcData.C10 = parseFloat(getNum(calcData.C10));
-                    calcData.C11 = parseFloat(getNum(calcData.C11));
-                    calcData.C15 = parseFloat(getNum(calcData.C15));
-                    calcData.C16 = parseFloat(getNum(calcData.C16));
-                    calcData.C17 = parseFloat(getNum(calcData.C17));
-                    calcData.C18 = parseFloat(getNum(calcData.C18));
-                    dbData[3].C = dbData[3].B / dbData[3].A * 100;
-                    dbData[4].C = dbData[4].B / dbData[4].A * 100;
-                    //E4=(D4+B4)/((A4/0.8))
-                    dbData[3].E = (parseFloat(dbData[3].D) + parseFloat(dbData[3].B))/(dbData[3].A/0.8) *100;
-                    //E5=(D5+B5)/((A5/0.8))
-                    dbData[4].E = (parseFloat(dbData[4].D) + parseFloat(dbData[4].B))/(dbData[4].A/0.8) *100;
-                    //H4,H5
-                    dbData[3].H = calcData.C10;
-                    dbData[4].H = calcData.C10;
-                    //I4,I5 I4 = A4;I5 = A5;
-                    dbData[3].I = dbData[3].A;
-                    dbData[4].I = dbData[4].A;
-                    //I6,I7 I6=I4/(1-CALCULATOR!$C$14) I7=I5/(1-CALCULATOR!$C$14)
-                    dbData[5].I = dbData[3].I / (1 - parseFloat(calcData.C14.split("%"))/100);
-                    dbData[6].I = dbData[4].I / (1 - parseFloat(calcData.C14.split("%"))/100);
-                    //K4=if(CALCULATOR!$C$8="Mission 345",CALCULATOR!C11,0)
-                    if(calcData.C8 === "Mission 345") dbData[3].K = calcData.C11;
-                    else dbData[3].K = 0;
-                    //K5=if(CALCULATOR!$C$8="REC 370",CALCULATOR!$C$11,0)
-                    if(calcData.C8 === "REC 370") dbData[4].K = calcData.C11;
-                    else dbData[4].K = 0;
-                    //L4=if(CALCULATOR!$C$8="Mission 345",CALCULATOR!$C$15,0)
-                    if(calcData.C8 === "Mission 345") dbData[3].L = calcData.C15;
-                    else dbData[3].L = 0;
-                    //L5=if(CALCULATOR!$C$8="REC 370",CALCULATOR!$C$15,0)
-                    if(calcData.C8 === "REC 370") dbData[4].L = calcData.C15;
-                    else dbData[4].L = 0;
-                    //M4=if(CALCULATOR!$C$8="Mission 345",-CALCULATOR!$C$16,0)
-                    if(calcData.C8 === "Mission 345") dbData[3].M = -calcData.C16;
-                    else dbData[3].M = 0;
-                    //M5=if(CALCULATOR!$C$8="REC 370",-CALCULATOR!$C$16,0)
-                    if(calcData.C8 === "REC 370") dbData[4].M = -calcData.C16;
-                    else dbData[4].M = 0;
-                    //N4=if(CALCULATOR!$C$8="Mission 345",-CALCULATOR!$C$17,0)
-                    if(calcData.C8 === "Mission 345") dbData[3].N = -calcData.C17;
-                    else dbData[3].N = 0;
-                    //N5=if(CALCULATOR!$C$8="REC 370",-CALCULATOR!$C$17,0)
-                    if(calcData.C8 === "REC 370") dbData[4].N = -calcData.C17;
-                    else dbData[4].N = 0;
-                    //O4=if(CALCULATOR!$C$8="Mission 345",-CALCULATOR!$C$18,0)
-                    if(calcData.C8 === "Mission 345") dbData[3].O = -calcData.C18;
-                    else dbData[3].O = 0;
-                    //O5=if(CALCULATOR!$C$8="REC 370",-CALCULATOR!$C$18,0)
-                    if(calcData.C8 === "REC 370") dbData[4].O = -calcData.C18;
-                    else dbData[4].O = 0;
-                    //Q4=sum(L4:O4)
-                    dbData[3].Q = (parseFloat(getNum(dbData[3].L))+parseFloat(getNum(dbData[3].M))+parseFloat(getNum(dbData[3].N))+parseFloat(getNum(dbData[3].O)));
-                    //Q5=sum(L5:O5)
-                    dbData[4].Q = (parseFloat(getNum(dbData[4].L))+parseFloat(getNum(dbData[4].M))+parseFloat(getNum(dbData[4].N))+parseFloat(getNum(dbData[4].O)));
-                    //S4=IF(Q4>0,Q4/H4,0)
-                    if(parseFloat(getNum(dbData[3].Q)) > 0) dbData[3].S = (parseFloat(getNum(dbData[3].Q))/parseFloat(getNum(dbData[3].H)));
-                    else dbData[3].S = 0;
-                    //S5=IF(Q5>0,Q5/H5,0)
-                    if(parseFloat(getNum(dbData[4].Q)) > 0) dbData[4].S = (parseFloat(getNum(dbData[4].Q))/parseFloat(getNum(dbData[4].H)));
-                    else dbData[4].S = 0;
-                    //S8=IF(S4<I4,"REFUSED","ACCEPTED")
-                    if(parseFloat(getNum(dbData[3].S)) < parseFloat(getNum(dbData[3].I))) dbData[7].S = "REFUSED";
-                    else dbData[7].S = "ACCEPTED";
-                    //S9=IF(S5<I5,"REFUSED","ACCEPTED")
-                    if(parseFloat(getNum(dbData[4].S)) < parseFloat(getNum(dbData[4].I))) dbData[8].S = "REFUSED";
-                    else dbData[8].S = "ACCEPTED";
-                    //T4=IF(S4>I4,S4-I4,0)
-                    if(parseFloat(getNum(dbData[3].S)) > parseFloat(getNum(dbData[3].I))) dbData[3].T = (parseFloat(getNum(dbData[3].S)) - parseFloat(getNum(dbData[3].I)));
-                    else dbData[3].T = 0;
-                    //T5=IF(S5>0,S5-I5,0)
-                    if(parseFloat(getNum(dbData[4].S)) > parseFloat(getNum(dbData[4].I))) dbData[4].T = (parseFloat(getNum(dbData[4].S)) - parseFloat(getNum(dbData[4].I)));
-                    else dbData[4].T = 0;
-                    //U4=IF(T4>=0,IF(CALCULATOR!$C$6="Bronze",T4*$Z$7,IF(CALCULATOR!$C$6="Silver",T4*$Z$8,T4*$Z$9)))
-                    if(parseFloat(getNum(dbData[3].T)) >=0){
-                        if(calcData.C6 === "Bronze") dbData[3].U =(parseFloat(getNum(dbData[3].T))*parseFloat(dbData[6].Z.split("%")[0])/100);
-                        else{
-                            if(calcData.C6 === "Silver") dbData[3].U =(parseFloat(getNum(dbData[3].T))*parseFloat(dbData[7].Z.split("%")[0])/100);
-                            else dbData[3].U =(parseFloat(getNum(dbData[3].T))*parseFloat(dbData[8].Z.split("%")[0])/100);
+                  firebase.firestore().collection("calculators").where("email","==",localStorage.getItem("email")).get().then((query1) => {
+                    query1.forEach((doc1) => {
+                        calcData = doc1.data();
+                        //formulas logic-------------------------------------------------------------------------------------------------------
+                        dbData[3].A = parseFloat(dbData[3].A);
+                        dbData[4].A = parseFloat(dbData[4].A);
+                        dbData[3].B = parseFloat(dbData[3].B);
+                        dbData[4].B = parseFloat(dbData[4].B);
+                        dbData[3].D = parseFloat(dbData[3].D);
+                        dbData[4].D = parseFloat(dbData[4].D);
+                        calcData.C10 = parseFloat(getNum(calcData.C10));
+                        calcData.C11 = parseFloat(getNum(calcData.C11));
+                        calcData.C15 = parseFloat(getNum(calcData.C15));
+                        calcData.C16 = parseFloat(getNum(calcData.C16));
+                        calcData.C17 = parseFloat(getNum(calcData.C17));
+                        calcData.C18 = parseFloat(getNum(calcData.C18));
+                        dbData[3].C = dbData[3].B / dbData[3].A * 100;
+                        dbData[4].C = dbData[4].B / dbData[4].A * 100;
+                        //E4=(D4+B4)/((A4/0.8))
+                        dbData[3].E = (parseFloat(dbData[3].D) + parseFloat(dbData[3].B))/(dbData[3].A/0.8) *100;
+                        //E5=(D5+B5)/((A5/0.8))
+                        dbData[4].E = (parseFloat(dbData[4].D) + parseFloat(dbData[4].B))/(dbData[4].A/0.8) *100;
+                        //H4,H5
+                        dbData[3].H = calcData.C10;
+                        dbData[4].H = calcData.C10;
+                        //I4,I5 I4 = A4;I5 = A5;
+                        dbData[3].I = dbData[3].A;
+                        dbData[4].I = dbData[4].A;
+                        //I6,I7 I6=I4/(1-CALCULATOR!$C$14) I7=I5/(1-CALCULATOR!$C$14)
+                        dbData[5].I = dbData[3].I / (1 - parseFloat(calcData.C14.split("%"))/100);
+                        dbData[6].I = dbData[4].I / (1 - parseFloat(calcData.C14.split("%"))/100);
+                        //K4=if(CALCULATOR!$C$8="Mission 345",CALCULATOR!C11,0)
+                        if(calcData.C8 === "Mission 345") dbData[3].K = calcData.C11;
+                        else dbData[3].K = 0;
+                        //K5=if(CALCULATOR!$C$8="REC 370",CALCULATOR!$C$11,0)
+                        if(calcData.C8 === "REC 370") dbData[4].K = calcData.C11;
+                        else dbData[4].K = 0;
+                        //L4=if(CALCULATOR!$C$8="Mission 345",CALCULATOR!$C$15,0)
+                        if(calcData.C8 === "Mission 345") dbData[3].L = calcData.C15;
+                        else dbData[3].L = 0;
+                        //L5=if(CALCULATOR!$C$8="REC 370",CALCULATOR!$C$15,0)
+                        if(calcData.C8 === "REC 370") dbData[4].L = calcData.C15;
+                        else dbData[4].L = 0;
+                        //M4=if(CALCULATOR!$C$8="Mission 345",-CALCULATOR!$C$16,0)
+                        if(calcData.C8 === "Mission 345") dbData[3].M = -calcData.C16;
+                        else dbData[3].M = 0;
+                        //M5=if(CALCULATOR!$C$8="REC 370",-CALCULATOR!$C$16,0)
+                        if(calcData.C8 === "REC 370") dbData[4].M = -calcData.C16;
+                        else dbData[4].M = 0;
+                        //N4=if(CALCULATOR!$C$8="Mission 345",-CALCULATOR!$C$17,0)
+                        if(calcData.C8 === "Mission 345") dbData[3].N = -calcData.C17;
+                        else dbData[3].N = 0;
+                        //N5=if(CALCULATOR!$C$8="REC 370",-CALCULATOR!$C$17,0)
+                        if(calcData.C8 === "REC 370") dbData[4].N = -calcData.C17;
+                        else dbData[4].N = 0;
+                        //O4=if(CALCULATOR!$C$8="Mission 345",-CALCULATOR!$C$18,0)
+                        if(calcData.C8 === "Mission 345") dbData[3].O = -calcData.C18;
+                        else dbData[3].O = 0;
+                        //O5=if(CALCULATOR!$C$8="REC 370",-CALCULATOR!$C$18,0)
+                        if(calcData.C8 === "REC 370") dbData[4].O = -calcData.C18;
+                        else dbData[4].O = 0;
+                        //Q4=sum(L4:O4)
+                        dbData[3].Q = (parseFloat(getNum(dbData[3].L))+parseFloat(getNum(dbData[3].M))+parseFloat(getNum(dbData[3].N))+parseFloat(getNum(dbData[3].O)));
+                        //Q5=sum(L5:O5)
+                        dbData[4].Q = (parseFloat(getNum(dbData[4].L))+parseFloat(getNum(dbData[4].M))+parseFloat(getNum(dbData[4].N))+parseFloat(getNum(dbData[4].O)));
+                        //S4=IF(Q4>0,Q4/H4,0)
+                        if(parseFloat(getNum(dbData[3].Q)) > 0) dbData[3].S = (parseFloat(getNum(dbData[3].Q))/parseFloat(getNum(dbData[3].H)));
+                        else dbData[3].S = 0;
+                        //S5=IF(Q5>0,Q5/H5,0)
+                        if(parseFloat(getNum(dbData[4].Q)) > 0) dbData[4].S = (parseFloat(getNum(dbData[4].Q))/parseFloat(getNum(dbData[4].H)));
+                        else dbData[4].S = 0;
+                        //S8=IF(S4<I4,"REFUSED","ACCEPTED")
+                        if(parseFloat(getNum(dbData[3].S)) < parseFloat(getNum(dbData[3].I))) dbData[7].S = "REFUSED";
+                        else dbData[7].S = "ACCEPTED";
+                        //S9=IF(S5<I5,"REFUSED","ACCEPTED")
+                        if(parseFloat(getNum(dbData[4].S)) < parseFloat(getNum(dbData[4].I))) dbData[8].S = "REFUSED";
+                        else dbData[8].S = "ACCEPTED";
+                        //T4=IF(S4>I4,S4-I4,0)
+                        if(parseFloat(getNum(dbData[3].S)) > parseFloat(getNum(dbData[3].I))) dbData[3].T = (parseFloat(getNum(dbData[3].S)) - parseFloat(getNum(dbData[3].I)));
+                        else dbData[3].T = 0;
+                        //T5=IF(S5>0,S5-I5,0)
+                        if(parseFloat(getNum(dbData[4].S)) > parseFloat(getNum(dbData[4].I))) dbData[4].T = (parseFloat(getNum(dbData[4].S)) - parseFloat(getNum(dbData[4].I)));
+                        else dbData[4].T = 0;
+                        //U4=IF(T4>=0,IF(CALCULATOR!$C$6="Bronze",T4*$Z$7,IF(CALCULATOR!$C$6="Silver",T4*$Z$8,T4*$Z$9)))
+                        if(parseFloat(getNum(dbData[3].T)) >=0){
+                            if(calcData.C6 === "Bronze") dbData[3].U =(parseFloat(getNum(dbData[3].T))*parseFloat(dbData[6].Z.split("%")[0])/100);
+                            else{
+                                if(calcData.C6 === "Silver") dbData[3].U =(parseFloat(getNum(dbData[3].T))*parseFloat(dbData[7].Z.split("%")[0])/100);
+                                else dbData[3].U =(parseFloat(getNum(dbData[3].T))*parseFloat(dbData[8].Z.split("%")[0])/100);
+                            }
                         }
-                    }
-                    //U5=IF(T5>=0,IF(CALCULATOR!$C$6="Bronze",T5*$Z$7,IF(CALCULATOR!$C$6="Silver",T5*$Z$8,T5*$Z$9)))
-                    if(parseFloat(getNum(dbData[4].T)) >=0){
-                        if(calcData.C6 === "Bronze") dbData[4].U =(parseFloat(getNum(dbData[4].T))*parseFloat(dbData[6].Z.split("%")[0])/100);
-                        else{
-                            if(calcData.C6 === "Silver") dbData[4].U =(parseFloat(getNum(dbData[4].T))*parseFloat(dbData[7].Z.split("%")[0])/100);
-                            else dbData[4].U =(parseFloat(getNum(dbData[4].T))*parseFloat(dbData[8].Z.split("%")[0])/100);
+                        //U5=IF(T5>=0,IF(CALCULATOR!$C$6="Bronze",T5*$Z$7,IF(CALCULATOR!$C$6="Silver",T5*$Z$8,T5*$Z$9)))
+                        if(parseFloat(getNum(dbData[4].T)) >=0){
+                            if(calcData.C6 === "Bronze") dbData[4].U =(parseFloat(getNum(dbData[4].T))*parseFloat(dbData[6].Z.split("%")[0])/100);
+                            else{
+                                if(calcData.C6 === "Silver") dbData[4].U =(parseFloat(getNum(dbData[4].T))*parseFloat(dbData[7].Z.split("%")[0])/100);
+                                else dbData[4].U =(parseFloat(getNum(dbData[4].T))*parseFloat(dbData[8].Z.split("%")[0])/100);
+                            }
                         }
-                    }
-                    //V4=IF(+S4>=I4,B4*H4,0)
-                    if(parseFloat(getNum(dbData[3].S)) >= parseFloat(getNum(dbData[3].I))) dbData[3].V = ((parseFloat(getNum(dbData[3].B)))*(parseFloat(getNum(dbData[3].H))));
-                    else dbData[3].V = 0;
-                    //V5=IF(S5>I5,B5*H5,0)
-                    if(parseFloat(getNum(dbData[4].S)) > parseFloat(getNum(dbData[4].I))) dbData[4].V = ((parseFloat(getNum(dbData[4].B)))*(parseFloat(getNum(dbData[4].H))));
-                    else dbData[4].V = 0;
-                    //Y4=IF(CALCULATOR!$C$7="Self Gen",D4*H4,0)
-                    if(calcData.C7 === "Self Gen") dbData[3].Y = ((parseFloat(getNum(dbData[3].D)))*(parseFloat(getNum(dbData[3].H))));
-                    else dbData[3].Y = 0;
-                    //Y5=IF(CALCULATOR!$C$7="Self Gen",D5*H5,0)
-                    if(calcData.C7 === "Self Gen") dbData[4].Y = ((parseFloat(getNum(dbData[4].D)))*(parseFloat(getNum(dbData[4].H))));
-                    else dbData[4].Y = 0;
-                    //Z4=U4*H4
-                    dbData[3].Z = ((parseFloat(getNum(dbData[3].U)))*(parseFloat(getNum(dbData[3].H))));
-                    //Z5=U5*H5
-                    dbData[4].Z = ((parseFloat(getNum(dbData[4].U)))*(parseFloat(getNum(dbData[4].H))));
-                    //AA4=sum(V4:Z4)
-                    dbData[3].AA = ((parseFloat(getNum(dbData[3].V)))+(parseFloat(getNum(dbData[3].Y)))+(parseFloat(getNum(dbData[3].Z))));
-                    //AA5=sum(V5:Z5)
-                    dbData[4].AA = ((parseFloat(getNum(dbData[4].V)))+(parseFloat(getNum(dbData[4].Y)))+(parseFloat(getNum(dbData[4].Z))));
-                    setData(dbData);
-                    setLoading(false);
+                        //V4=IF(+S4>=I4,B4*H4,0)
+                        if(parseFloat(getNum(dbData[3].S)) >= parseFloat(getNum(dbData[3].I))) dbData[3].V = ((parseFloat(getNum(dbData[3].B)))*(parseFloat(getNum(dbData[3].H))));
+                        else dbData[3].V = 0;
+                        //V5=IF(S5>I5,B5*H5,0)
+                        if(parseFloat(getNum(dbData[4].S)) > parseFloat(getNum(dbData[4].I))) dbData[4].V = ((parseFloat(getNum(dbData[4].B)))*(parseFloat(getNum(dbData[4].H))));
+                        else dbData[4].V = 0;
+                        //Y4=IF(CALCULATOR!$C$7="Self Gen",D4*H4,0)
+                        if(calcData.C7 === "Self Gen") dbData[3].Y = ((parseFloat(getNum(dbData[3].D)))*(parseFloat(getNum(dbData[3].H))));
+                        else dbData[3].Y = 0;
+                        //Y5=IF(CALCULATOR!$C$7="Self Gen",D5*H5,0)
+                        if(calcData.C7 === "Self Gen") dbData[4].Y = ((parseFloat(getNum(dbData[4].D)))*(parseFloat(getNum(dbData[4].H))));
+                        else dbData[4].Y = 0;
+                        //Z4=U4*H4
+                        dbData[3].Z = ((parseFloat(getNum(dbData[3].U)))*(parseFloat(getNum(dbData[3].H))));
+                        //Z5=U5*H5
+                        dbData[4].Z = ((parseFloat(getNum(dbData[4].U)))*(parseFloat(getNum(dbData[4].H))));
+                        //AA4=sum(V4:Z4)
+                        dbData[3].AA = ((parseFloat(getNum(dbData[3].V)))+(parseFloat(getNum(dbData[3].Y)))+(parseFloat(getNum(dbData[3].Z))));
+                        //AA5=sum(V5:Z5)
+                        dbData[4].AA = ((parseFloat(getNum(dbData[4].V)))+(parseFloat(getNum(dbData[4].Y)))+(parseFloat(getNum(dbData[4].Z))));
+                        setData(dbData);
+                        setLoading(false);
+                    })
+                  })
                 })
-              })
-            })
+            }else{
+                let initialData = [];
+                let tempRowData = {};
+                let key;
+                for(var i = 0;i < 15; i++){
+                    tempRowData = {};
+                    tempRowData.id = i+1;
+                    for(var j = 65;j < 91;j++){
+                        key = String.fromCharCode(j);
+                        tempRowData[key] = "";
+                    }
+                    tempRowData.AA = "";
+                    tempRowData.AB = "";
+                    initialData.push(tempRowData);
+                }
+                setData(initialData);
+                setLoading(false);
+            }
+            
           })
           return () => {
             var formulasRef = firebase.database().ref('MINIFORMULAS');

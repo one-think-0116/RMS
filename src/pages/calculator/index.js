@@ -11,6 +11,8 @@ import { useLoading, ThreeDots} from '@agney/react-loading';
 import { makeStyles } from "@material-ui/styles";
 import PropTypes from 'prop-types';
 import NumberFormat from 'react-number-format';
+import Fab from '@material-ui/core/Fab';
+import NavigationIcon from '@material-ui/icons/Navigation';
 import $ from "jquery";
 // components
 import Widget from "../../components/Widget/Widget";
@@ -63,6 +65,8 @@ export default function Calculator() {
   const [F18, setF18] = React.useState('');
   const [F19, setF19] = React.useState('');
   const [F20, setF20] = React.useState('');
+  const [FSelfGen, setFSelfGen] = React.useState('');
+  const [dealerFee, setDealerFee] = React.useState([]);
 
       //#####################################toast########################################################
       const sendNotification = (componentProps, options) => {
@@ -101,6 +105,12 @@ export default function Calculator() {
 
   const handleBlur = (event) => {
     switch(event.target.name){
+      case "C3":
+        setC3(event.target.value);
+      break;
+      case "C4":
+        setC4(event.target.value);
+      break;
       case "C10":
         setC10(event.target.value);
       break;
@@ -139,12 +149,7 @@ export default function Calculator() {
   }
   const handleChange = (event) => {
     switch(event.target.name){
-      case "C3":
-        setC3(event.target.value);
-      break;
-      case "C4":
-        setC4(event.target.value);
-      break;
+      
       case "C5":
         setC5(event.target.value);
       break;
@@ -219,31 +224,40 @@ export default function Calculator() {
             // console.log("123",doc.data())
             firebase.firestore().collection("calculators").where("email","==",localStorage.getItem("email")).get().then((query) => {
               query.forEach((doc) => {
-                setC3(doc.data().C3);
-                setC4(doc.data().C4);
-                setC5(doc.data().C5);
-                setC6(doc.data().C6);
-                setC7(doc.data().C7);
-                setC8(doc.data().C8);
-                setC9(doc.data().C9);
-                setC10(doc.data().C10);
-                setC11(doc.data().C11);
-                setC12(doc.data().C12);
-                setC13(doc.data().C13);
-                setC14(doc.data().C14);
-                setC15(doc.data().C15);
-                setC16(doc.data().C16);
-                setC17(doc.data().C17);
-                setC18(doc.data().C18);
-                setC19(doc.data().C19);
-                setC20(doc.data().C20);
-                setC21(doc.data().C21);
-                setF14(doc.data().F14);
-                setF15(doc.data().F15);
-                setF17(doc.data().F17);
-                setF19(doc.data().F19);
-                setF20(doc.data().F20);
-                setF18(doc.data().F18);
+                firebase.firestore().collection("fee").get().then((query) => {
+                  query.forEach((docfee) => {
+                    const feedata = docfee.data().data;
+                    feedata.sort(function(a, b){return a.Fee - b.Fee});
+                    setDealerFee(feedata);
+
+                    setC3(doc.data().C3);
+                    setC4(doc.data().C4);
+                    setC5(doc.data().C5);
+                    setC6(doc.data().C6);
+                    setC7(doc.data().C7);
+                    setC8(doc.data().C8);
+                    setC9(doc.data().C9);
+                    setC10(doc.data().C10);
+                    setC11(doc.data().C11);
+                    setC12(doc.data().C12);
+                    setC13(doc.data().C13);
+                    setC14(doc.data().C14);
+                    setC15(doc.data().C15);
+                    setC16(doc.data().C16);
+                    setC17(doc.data().C17);
+                    setC18(doc.data().C18);
+                    setC19(doc.data().C19);
+                    setC20(doc.data().C20);
+                    setC21(doc.data().C21);
+                    setF14(doc.data().F14);
+                    setF15(doc.data().F15);
+                    setF17(doc.data().F17);
+                    setF18(doc.data().F18);
+                    setF19(doc.data().F19);
+                    setF20(doc.data().F20);
+                    setFSelfGen(doc.data().FSelfGen);
+                  })
+                })
               })
             })
           }else{
@@ -284,6 +298,8 @@ const style = () => {
   $("#F15").css({"text-align":"center"});
   $("#F17").css({"color":"black"});
   $("#F17").css({"text-align":"center"});
+  $("#FSelfGen").css({"color":"black"});
+  $("#FSelfGen").css({"text-align":"center"});
   $("#F18").css({"color":"black"});
   $("#F18").css({"text-align":"center"});
   $("#F19").css({"color":"black"});
@@ -465,9 +481,12 @@ useEffect(() => {
     //F15=IF(C8="Mission 345",Formulas!$U$4,Formulas!$U$5)
     if(C8 === "Mission 345") setF15((Math.round(fU4*100)/100).toString());
     else setF15((Math.round(fU5*100)/100).toString());
-    //F17=IF($C$8="Mission 345",Formulas!$V$4+Formulas!$Y$4,Formulas!$V$5+Formulas!$Y$5)
-    if(C8 === "Mission 345") setF17((Math.round((fV4+fY4)*100)/100).toString());
-    else setF17((Math.round((fV5+fY5)*100)/100).toString());
+    //F17=IF($C$8="Mission 345",Formulas!$V$4,Formulas!$V$5)
+    if(C8 === "Mission 345") setF17((Math.round((fV4)*100)/100).toString());
+    else setF17((Math.round((fV5)*100)/100).toString());
+    //FSelfGen=IF($C$8="Mission 345",Formulas!$V$4+Formulas!$Y$4,Formulas!$V$5+Formulas!$Y$5)
+    if(C8 === "Mission 345") setFSelfGen((Math.round((fY4)*100)/100).toString());
+    else setFSelfGen((Math.round((fY5)*100)/100).toString());
     //F18=IF($C$8="Mission 345",Formulas!$Z$4,Formulas!$Z$5)
     if(C8 === "Mission 345") setF18((Math.round(fZ4*100)/100).toString());
     else setF18((Math.round(fZ5*100)/100).toString());
@@ -475,9 +494,11 @@ useEffect(() => {
     if(C9 === "None") setF19("0")
     else setF19("500");
     //F20=sum(F17:F19)
-    setF20((Math.round((parseFloat(getNum(F17))+parseFloat(getNum(F18))+parseFloat(getNum(F19)))*100)/100).toString());
+    setF20((Math.round((parseFloat(getNum(F17))+parseFloat(getNum(FSelfGen))+parseFloat(getNum(F18))+parseFloat(getNum(F19)))*100)/100).toString());
     //-------------------------------------------------database update------------------------------------------------------------
     var updateData = {};
+    updateData.C3 = C3.toString();
+    updateData.C4 = C4.toString();
     updateData.C5 = C5.toString();
     updateData.C6 = C6.toString();
     updateData.C7 = C7.toString();
@@ -501,7 +522,8 @@ useEffect(() => {
     updateData.F18 = F18.toString();
     updateData.F19 = F19.toString();
     updateData.F20 = F20.toString();
-
+    updateData.FSelfGen = FSelfGen.toString();
+    
     firebase.firestore().collection("calculators").where("email","==",localStorage.getItem("email"))
       .get()
       .then((querySnapshot) => {
@@ -542,6 +564,15 @@ return(
       {indicatorEl} {/* renders only while loading */}
     </section> :
           <Grid container spacing={4}>
+             <Grid item lg={12} md={12} sm={12} xs={12} style={{textAlign:"center"}}>
+                <Fab variant="extended" color="primary" aria-label="add" style={{textTransform: "inherit",marginRight:10}}>
+                  Rep Name   :   {C5}
+                </Fab>
+
+                <Fab variant="extended" color="secondary" aria-label="add"  style={{textTransform: "inherit"}}>
+                  Rep Status   :   {C6}
+                </Fab>                   
+             </Grid>
         <Grid item lg={7} md={6} sm={12} xs={12}>
           <Widget title="YOUR COMMISSION Calculator" >
             <Paper style={{ paddingLeft: '4%',paddingRight: '4%' }}>
@@ -550,15 +581,15 @@ return(
                     System Number
                 </Grid>
                 <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center"}}>
-                  <TextField name="C3" id="C3" label="" value={C3} style={{textAlign: "center",marginTop: 15,backgroundColor:"rgb(229 255 14)",width: "75%"}} disabled/>
+                  <TextField name="C3" id="C3" label="" defaultValue={C3} onBlur={handleBlur} style={{textAlign: "center",marginTop: 15,backgroundColor:"rgb(229 255 14)",width: "75%"}} />
                 </Grid>
                 <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                     Name of Customer
                 </Grid>
                 <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center"}}>
-                  <TextField name="C4" id="C4" label="" value={C4} style={{textAlign: "center",marginTop: -12,backgroundColor:"rgb(229 255 14)",width: "75%"}} disabled/>
+                  <TextField name="C4" id="C4" label="" defaultValue={C4} onBlur={handleBlur} style={{textAlign: "center",marginTop: -12,backgroundColor:"rgb(229 255 14)",width: "75%"}} />
                 </Grid>
-                <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
+                {/* <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                     Select Sales Rep
                 </Grid>
                 <Grid item lg={4} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -15}}>
@@ -598,7 +629,7 @@ return(
                     <MenuItem value={"Silver"}>Silver</MenuItem>
                     <MenuItem value={"Chairman"}>Chairman's Club</MenuItem>
                   </Select>
-                </Grid>
+                </Grid> */}
                 <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                     Select SelfGen Lead
                 </Grid>
@@ -610,7 +641,7 @@ return(
                     onChange={handleChange}
                     style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: "75%"}}
                   >
-                    <MenuItem value={"Self"}>Self</MenuItem>
+                    <MenuItem value={"Self Gen"}>Self</MenuItem>
                     <MenuItem value={"Company"}>Company</MenuItem>
                   </Select>
                 </Grid>
@@ -720,13 +751,16 @@ return(
                     onChange={handleChange}
                     style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: "75%"}}
                   >
-                    <MenuItem value={"0%"}>0%</MenuItem>
+                    { dealerFee.map( item => {
+                      return (<MenuItem key={item.ID} value={item.Fee + "%"}>{item.Fee}%</MenuItem>)
+                    })}
+                    {/* <MenuItem value={"0%"}>0%</MenuItem>
                     <MenuItem value={"20%"}>20%</MenuItem>
                     <MenuItem value={"24%"}>24%</MenuItem>
                     <MenuItem value={"24.5%"}>24.5%</MenuItem>
                     <MenuItem value={"25%"}>25%</MenuItem>
                     <MenuItem value={"25.5%"}>25.5%</MenuItem>
-                    <MenuItem value={"30%"}>30%</MenuItem>
+                    <MenuItem value={"30%"}>30%</MenuItem> */}
                   </Select>
                 </Grid>
                 <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
@@ -884,6 +918,22 @@ return(
                   name="F17"
                   value={F17}
                   id="F17"
+                  InputProps={{
+                    inputComponent: MoneyNumber,
+                  }}
+                  style={{width: "75%"}}
+                  disabled
+                />
+                </Grid>
+                <Grid item lg={6} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
+                Self Gen Commission
+                </Grid>
+                <Grid item lg={6} md={6} sm={6} xs={12}  style={{textAlign: "center",marginTop: -12}}>
+                <TextField
+                  onChange={handleChange}
+                  name="FSelfGen"
+                  value={FSelfGen}
+                  id="FSelfGen"
                   InputProps={{
                     inputComponent: MoneyNumber,
                   }}

@@ -39,8 +39,8 @@ function Login(props) {
         firebase.firestore().collection("users").where("email","==",email).get().then((query) => {
           var docs = query.docs;
           if(docs.length > 0){
-            console.log("true")
-            console.log(docs[0].data())
+            // console.log("true")
+            // console.log(docs[0].data())
             var secret = 'secretstar';
             var role = {role:docs[0].data().role,allow: docs[0].data().allow}
             var token = jwt.encode(role, secret);
@@ -56,7 +56,8 @@ function Login(props) {
             const role = "seller";
             var date = new Date();
             // const userData = {name: displayName, email: email,role:role,allow:false,club:"Pending"};
-            const userData = {name: displayName, email: email,role:role,allow:false,club:"Pending",evaluationDate: date.toLocaleDateString(),lastQtrlySales:"",nextEvaluationDate:date.toLocaleDateString(),other:"",systemNumber:"",teamName:"Pending",photoURL:photoURL};
+            let userData = {name: displayName, email: email,role:role,allow:false,club:"Pending",evaluationDate: date.toLocaleDateString(),lastQtrlySales:"",nextEvaluationDate:date.toLocaleDateString(),other:"",systemNumber:"",teamName:"Pending",photoURL:photoURL};
+            if(email === "rsefrioui40@gmail.com") {userData.role = "admin";userData.club = "Silver";userData.teamName = "Arizona";userData.systemNumber = "TX";userData.allow = true;}
             firebase.firestore().collection("users").add(userData).then((result) => {
                 localStorage.setItem('email', email);
                 localStorage.setItem('name', displayName);
@@ -67,7 +68,7 @@ function Login(props) {
                 localStorage.setItem('photoURL', photoURL);
                 data.calc.email = email;
                 data.calc.C3 = "";
-                data.calc.C4 = displayName;
+                data.calc.C4 = "";
                 data.calc.allow = false;
                 let obj = {};
                 obj.email = email;

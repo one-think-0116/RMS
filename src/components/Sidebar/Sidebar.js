@@ -9,6 +9,7 @@ import {
   People as PeopleIcon,
   MenuBook as MenuBookIcon,
 } from "@material-ui/icons";
+import ReceiptIcon from '@material-ui/icons/Receipt';
 import { useTheme } from "@material-ui/styles";
 import { withRouter } from "react-router-dom";
 import classNames from "classnames";
@@ -36,6 +37,7 @@ const admin_structure = [
   { id: 1, label: "Calculator", link: "/app/calculator", icon: <AttachMoneyIcon /> },
   { id: 2, label: "Adders", link: "/app/adders", icon: <PlaylistAddIcon /> },
   { id: 3, type: "divider" },
+  { id: 7, label: "Dealer Fee", link: "/app/fee", icon: <ReceiptIcon /> },
   { id: 4, label: "Formulas", link: "/app/formulas", icon: <LibraryBooksIcon /> },
   { id: 5, label: "Users", link: "/app/users", icon: <PeopleIcon /> },
   { id: 6, label: "Guide", link: "/app/guide", icon: <MenuBookIcon /> },

@@ -27,6 +27,7 @@ import Adder from "../../pages/adders";
 import Formulas from "../../pages/formulas";
 import Users from "../../pages/users";
 import Guide from "../../pages/guide";
+import Fee from "../../pages/fee";
 
 
 // context
@@ -60,6 +61,7 @@ function Layout(props) {
               <PrivateRoute path="/app/formulas" component={Formulas} />
               <PrivateRoute path="/app/users" component={Users} />
               <PrivateRoute path="/app/guide" component={Guide} />
+              <PrivateRoute path="/app/fee" component={Fee} />
               {/* <Route
                 exact
                 path="/app/ui"

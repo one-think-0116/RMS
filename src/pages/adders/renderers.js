@@ -15,7 +15,9 @@ export class Renderers {
             {
                 ref: (td) => {
                     const input = td && td.querySelector('input');
+                    // const input = document.createElement('select');
                     const activeElement = document.activeElement;
+                    // console.log("td",input,activeElement)
 
                     if (!input ||
                         !activeElement ||

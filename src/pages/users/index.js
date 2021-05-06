@@ -111,13 +111,14 @@ export default function Users() {
   const [updateFlag, setUpdateFlag] = React.useState(false);
   const [visible,setModal] = useState(false);
   const [name,setName] = useState("");
-  const [systemNumber,setSystemNumber] = useState("");
+  const [systemNumber,setSystemNumber] = useState('TX');
   const [evaluationDate,setEvaluationDate] = useState("");
   const [lastQtrlySales,setLastQtrlySales] = useState("");
   const [nextEvaluationDate,setNextEvaluationDate] = useState("");
   const [other,setOther] = useState("");
   const [dropInfo,setDropInfo] = useState({});
   const openModal = () => {
+    console.log("ss",systemNumber)
    setModal(true);
   }
 
@@ -138,6 +139,8 @@ export default function Users() {
     updateCharacters(items);
   }
   const okModal = (e) => {
+    console.log("s",systemNumber)
+
     const items = Array.from(characters);
     if(updateFlag){
       console.log("f",selectedUserEmail)
@@ -154,6 +157,7 @@ export default function Users() {
           item.nextEvaluationDate = nextEvaluationDate.toLocaleDateString();
           else item.nextEvaluationDate = nextEvaluationDate;
           item.other = other;
+          
           save(item);
         }
       })
@@ -196,7 +200,7 @@ export default function Users() {
                     var docs1 = querySnapshot.docs;
                     if(docs1.length > 0) //update documentation
                     {
-                      var cData = {C3:saveData.systemNumber,C6:saveData.club,allow:saveData.allow}
+                      var cData = {C3:saveData.systemNumber,C5:saveData.name,C6:saveData.club,allow:saveData.allow}
                         firebase.firestore().collection("calculators").doc(docs1[0].id).update(cData).then(() => {
                             console.log("calculators Document successfully update!");
                         })
@@ -213,6 +217,7 @@ export default function Users() {
     if(result.destination.droppableId === "Pending"){
       reorderedItem.allow = false;
       reorderedItem.teamName = "Pending"
+      reorderedItem.systemNumber = "";
       reorderedItem.club = result.destination.droppableId;
       items.splice(result.destination.index, 0, reorderedItem);
       updateCharacters(items);
@@ -220,10 +225,10 @@ export default function Users() {
       console.log("p",items);
     }else{
       reorderedItem.allow = true;
-      if(reorderedItem.teamName === "Pending") setTeam("Arizona")
-      else setTeam(reorderedItem.teamName)
+      if(reorderedItem.teamName === "Pending") {setTeam("Arizona");setSystemNumber("TX")}
+      else {setTeam(reorderedItem.teamName);
+      setSystemNumber(reorderedItem.systemNumber)}
       setName(reorderedItem.name)
-      setSystemNumber(reorderedItem.systemNumber)
       setEvaluationDate(reorderedItem.evaluationDate)
       setLastQtrlySales(reorderedItem.lastQtrlySales)
 
@@ -261,7 +266,7 @@ export default function Users() {
       }
     })
     selectedUserEmail = updateItem.email;
-    if(updateItem.teamName === "Pending") setTeam("Arizona")
+    if(updateItem.teamName === "Pending") setTeam("Pending")
     else setTeam(updateItem.teamName)
     setName(updateItem.name)
     setEvaluationDate(updateItem.evaluationDate)

@@ -49,7 +49,17 @@ export default function Guide(){
                         updateData.data.push(ndata);
                     })
                     firebase.firestore().collection("guide").doc(docs[0].id).update(updateData).then(() => {
-                        // console.log("guide Document successfully update!");
+                        console.log("guide Document successfully update!");
+                    })
+                }else{
+                    var updateData = {};
+                    updateData.data = [];
+                    newdata.map((item) => {
+                        const {temp,inEdit,...ndata} = item;
+                        updateData.data.push(ndata);
+                    })
+                    firebase.firestore().collection("guide").add(updateData).then(() => {
+                        console.log("guide Document successfully add!");
                     })
                 }
             })
@@ -70,10 +80,26 @@ export default function Guide(){
     const renderers =  new Renderers(enterEdit, exitEdit, 'inEdit');
     React.useEffect(() => {
         firebase.firestore().collection("guide").get().then((query) => {
-          query.forEach((doc) => {
-            setData(doc.data().data)
-            setLoading(false);
-          })
+            if(query.docs.length === 1){
+                query.forEach((doc) => {
+                    setData(doc.data().data)
+                    setLoading(false);
+                  })
+            }else{
+                let initialData = [];
+                let tempRowData = {};
+                let key;
+                for(var i = 0;i < 25; i++){
+                    tempRowData = {};
+                    tempRowData.id = i+1;
+                    tempRowData.A = "";
+                    tempRowData.A = "";
+                    initialData.push(tempRowData);
+                }
+                setData(initialData);
+                setLoading(false); 
+            }
+          
         })
       }, [])
       return(
