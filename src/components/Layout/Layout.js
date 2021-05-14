@@ -28,6 +28,7 @@ import Formulas from "../../pages/formulas";
 import Users from "../../pages/users";
 import Guide from "../../pages/guide";
 import Fee from "../../pages/fee";
+import Cash from "../../pages/cash";
 
 
 // context
@@ -62,6 +63,7 @@ function Layout(props) {
               <PrivateRoute path="/app/users" component={Users} />
               <PrivateRoute path="/app/guide" component={Guide} />
               <PrivateRoute path="/app/fee" component={Fee} />
+              <PrivateRoute path="/app/cash" component={Cash} />
               {/* <Route
                 exact
                 path="/app/ui"

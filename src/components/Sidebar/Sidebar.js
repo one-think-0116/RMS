@@ -10,6 +10,7 @@ import {
   MenuBook as MenuBookIcon,
 } from "@material-ui/icons";
 import ReceiptIcon from '@material-ui/icons/Receipt';
+import LocalAtmSharpIcon from '@material-ui/icons/LocalAtmSharp';
 import { useTheme } from "@material-ui/styles";
 import { withRouter } from "react-router-dom";
 import classNames from "classnames";
@@ -38,6 +39,7 @@ const admin_structure = [
   { id: 2, label: "Adders", link: "/app/adders", icon: <PlaylistAddIcon /> },
   { id: 3, type: "divider" },
   { id: 7, label: "Dealer Fee", link: "/app/fee", icon: <ReceiptIcon /> },
+  { id: 8, label: "Cash", link: "/app/cash", icon: <LocalAtmSharpIcon /> },
   { id: 4, label: "Formulas", link: "/app/formulas", icon: <LibraryBooksIcon /> },
   { id: 5, label: "Users", link: "/app/users", icon: <PeopleIcon /> },
   { id: 6, label: "Guide", link: "/app/guide", icon: <MenuBookIcon /> },
