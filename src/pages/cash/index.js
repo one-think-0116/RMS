@@ -13,8 +13,11 @@ import {
     Paper,
     Grid as MaterialGrid,
   } from '@material-ui/core';
-  import Widget from "../../components/Widget/Widget";
+import Widget from "../../components/Widget/Widget";
+import SweetAlert from 'react-bootstrap-sweetalert';
+import { CircularProgressWithLabel } from "../../components/CircularProgressWithLabel"
 
+let deleteDataItem;
 export default function Cash() {
     var classes = useStyles();
     const { containerProps, indicatorEl } = useLoading({
@@ -25,6 +28,7 @@ export default function Cash() {
     const firebase = React.useContext(FirebaseContext);
     const [editField, setEditField] = React.useState("inEdit");
     const [data, setData] = React.useState([]);
+    const [alert,setAlert] = React.useState(null);
     //#####################################toast########################################################
     const sendNotification = (componentProps, options) => {
         return toast(
@@ -76,7 +80,9 @@ export default function Cash() {
                 )
         setData(newData)
     }
-
+    const warnConfirm = () => {
+        setAlert(null);
+    }
     const add = (dataItem) => {
         dataItem.inEdit = undefined;
         dataItem.ID = data.length;
@@ -84,33 +90,69 @@ export default function Cash() {
             const {inEdit,...nitem} = item;
             return nitem;
         })
-        let saveData = {data:newSaveData};
-        if(data.length === 1){
-            firebase.firestore().collection("cash").add(saveData).then(() => {
-                setData([...data]);
-                handleNotificationCall();
-                console.log("cash Document successfully add!");
-            })
-        }else
-        {
-            firebase.firestore().collection("cash")
-            .get()
-            .then((querySnapshot) => {
-                var docs = querySnapshot.docs;
-                if(docs.length > 0) //update documentation
-                {
-                    firebase.firestore().collection("cash").doc(docs[0].id).update(saveData).then(() => {
-                        data.sort(function(a, b){return a.cash - b.cash});
+        if(isNaN(dataItem.cash)){
+            setAlert(<SweetAlert
+            warnning
+            confirmBtnText="Yes, got it"
+            confirmBtnBsStyle="delete"
+            title="Are you sure?"
+            onConfirm={warnConfirm}
+            focusConfirmBtn
+            >
+            The field value must be <b>number</b>.
+          </SweetAlert>)
+          discard(dataItem);
+        }else{
+            if(parseFloat(dataItem.cash) < 0){
+                setAlert(<SweetAlert
+                    warnning
+                    confirmBtnText="Yes, got it"
+                    confirmBtnBsStyle="delete"
+                    title="Are you sure?"
+                    onConfirm={warnConfirm}
+                    focusConfirmBtn
+                    >
+                    The field value must be greater than <b>0</b>.
+                  </SweetAlert>)
+                  discard(dataItem);
+            }else{
+                let saveData = {data:newSaveData};
+                setAlert(
+                    <SweetAlert
+                        title={""}
+                        onConfirm={() => {}}
+                        showConfirm={false}
+                    >
+                        <CircularProgressWithLabel value={100} />
+                    </SweetAlert>)
+                if(data.length === 1){
+                    firebase.firestore().collection("cash").add(saveData).then(() => {
+                        setAlert(null);
                         setData([...data]);
                         handleNotificationCall();
-                        console.log("cash Document successfully update!");
+                        console.log("cash Document successfully add!");
                     })
+                }else
+                {
+                    firebase.firestore().collection("cash")
+                    .get()
+                    .then((querySnapshot) => {
+                        var docs = querySnapshot.docs;
+                        if(docs.length > 0) //update documentation
+                        {
+                            firebase.firestore().collection("cash").doc(docs[0].id).update(saveData).then(() => {
+                                setAlert(null);
+                                data.sort(function(a, b){return a.cash - b.cash});
+                                setData([...data]);
+                                handleNotificationCall();
+                                console.log("cash Document successfully update!");
+                            })
+                        }
+                    })
+                    
                 }
-            })
-            
+            }
         }
-        
-        
     }
 
     const update = (dataItem) => {
@@ -128,21 +170,59 @@ export default function Cash() {
             const {inEdit,...nitem} = item;
             return nitem;
         })
-        let saveData = {data:newSaveData};
-        firebase.firestore().collection("cash")
-            .get()
-            .then((querySnapshot) => {
-                var docs = querySnapshot.docs;
-                if(docs.length > 0) //update documentation
-                {
-                    firebase.firestore().collection("cash").doc(docs[0].id).update(saveData).then(() => {
-                        data.sort(function(a, b){return a.cash - b.cash});
-                        setData([...data]);
-                        handleNotificationCall();
-                        console.log("cash Document successfully update!");
+        if(isNaN(item.cash)){
+            setAlert(<SweetAlert
+                warnning
+                confirmBtnText="Yes, got it"
+                confirmBtnBsStyle="delete"
+                title="Are you sure?"
+                onConfirm={warnConfirm}
+                focusConfirmBtn
+                >
+                The field value must be <b>number</b>.
+              </SweetAlert>)
+              cancelCurrentChanges()
+        }else{
+            if(parseFloat(item.cash) < 0){
+                setAlert(<SweetAlert
+                    warnning
+                    confirmBtnText="Yes, got it"
+                    confirmBtnBsStyle="delete"
+                    title="Are you sure?"
+                    onConfirm={warnConfirm}
+                    focusConfirmBtn
+                    >
+                    The field value must be greater than <b>0</b>.
+                  </SweetAlert>)
+                  cancelCurrentChanges()
+            }else{
+                let saveData = {data:newSaveData};
+                setAlert(
+                    <SweetAlert
+                        title={""}
+                        onConfirm={() => {}}
+                        showConfirm={false}
+                    >
+                        <CircularProgressWithLabel value={100} />
+                    </SweetAlert>)
+                firebase.firestore().collection("cash")
+                    .get()
+                    .then((querySnapshot) => {
+                        var docs = querySnapshot.docs;
+                        if(docs.length > 0) //update documentation
+                        {
+                            firebase.firestore().collection("cash").doc(docs[0].id).update(saveData).then(() => {
+                                setAlert(null);
+                                data.sort(function(a, b){return a.cash - b.cash});
+                                setData([...data]);
+                                handleNotificationCall();
+                                console.log("cash Document successfully update!");
+                            })
+                        }
                     })
-                }
-            })
+            }
+        }
+        
     }
 
     const cancel = (dataItem) => {
@@ -153,7 +233,35 @@ export default function Cash() {
     }
 
     const remove = (dataItem) => {
-        removeItem(data, dataItem);
+        deleteDataItem = dataItem;
+        setAlert(
+            <SweetAlert
+            danger
+            showCancel
+            confirmBtnText="Yes, delete it!"
+            confirmBtnBsStyle="delete"
+            title="Are you sure?"
+            onConfirm={deleteRequest}
+            onCancel={deleteCancel}
+            focusCancelBtn
+            >
+            You will not be able to recover this cash(<b>$ {dataItem.cash}</b>).
+          </SweetAlert>
+          );
+        
+        
+    }
+    const deleteRequest = () => {
+        setAlert(null)
+        setAlert(
+        <SweetAlert
+            title={""}
+            onConfirm={() => {}}
+            showConfirm={false}
+        >
+            <CircularProgressWithLabel value={50} />
+        </SweetAlert>)
+        removeItem(data, deleteDataItem);
         let id = 0;
         const newSaveData = data.map(item => {
             const {inEdit,...nitem} = item;
@@ -168,15 +276,33 @@ export default function Cash() {
                 var docs = querySnapshot.docs;
                 if(docs.length > 0) //update documentation
                 {
+                    setAlert(
+                        <SweetAlert
+                            title={""}
+                            onConfirm={() => {}}
+                            showConfirm={false}
+                        >
+                            <CircularProgressWithLabel value={100} />
+                        </SweetAlert>)
                     firebase.firestore().collection("cash").doc(docs[0].id).update(saveData).then(() => {
                         data.sort(function(a, b){return a.cash - b.cash});
                         setData([...newSaveData]);
-                        handleNotificationCall();
+                        // handleNotificationCall();
+                        setAlert(
+                            <SweetAlert success title="Deleted" onConfirm={deletedConfirm}>
+                              The cash has been deleted.
+                            </SweetAlert>
+                            )
                         console.log("cash Document successfully delete update!");
                     })
                 }
             })
-        
+    }
+    const deleteCancel = () => {
+        setAlert(null);
+    }
+    const deletedConfirm = () => {
+        setAlert(null);
     }
     const removeItem = (data, item) => {
         let index = data.findIndex(p => p === item || (item.ID && p.ID === item.ID));
@@ -229,6 +355,7 @@ export default function Cash() {
             <ToastContainer 
                 className={classes.toastsContainer}
             />
+            {alert}
             {loading ?    
             <section {...containerProps} style={{textAlign:"center",marginTop:window.innerHeight/2 - 100}}>
                 {indicatorEl} 

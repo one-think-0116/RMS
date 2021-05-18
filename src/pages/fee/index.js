@@ -6,6 +6,7 @@ import { MyCommandCell } from './myCommandCell';
 import { useLoading, ThreeDots} from '@agney/react-loading';
 import Notification from "../../components/Notification";
 import { ToastContainer, toast } from "react-toastify";
+import SweetAlert from 'react-bootstrap-sweetalert';
 import "react-toastify/dist/ReactToastify.css";
 import useStyles from "./styles";
 import "./style.css"
@@ -13,8 +14,10 @@ import {
     Paper,
     Grid as MaterialGrid,
   } from '@material-ui/core';
-  import Widget from "../../components/Widget/Widget";
+import Widget from "../../components/Widget/Widget";
+import { CircularProgressWithLabel } from "../../components/CircularProgressWithLabel"
 
+let deleteDataItem;
 export default function Fee() {
     var classes = useStyles();
     const { containerProps, indicatorEl } = useLoading({
@@ -25,6 +28,7 @@ export default function Fee() {
     const firebase = React.useContext(FirebaseContext);
     const [editField, setEditField] = React.useState("inEdit");
     const [data, setData] = React.useState([]);
+    const [alert,setAlert] = React.useState(null);
     //#####################################toast########################################################
     const sendNotification = (componentProps, options) => {
         return toast(
@@ -76,7 +80,9 @@ export default function Fee() {
                 )
         setData(newData)
     }
-
+    const warnConfirm = () => {
+        setAlert(null);
+    }
     const add = (dataItem) => {
         dataItem.inEdit = undefined;
         dataItem.ID = data.length;
@@ -84,33 +90,80 @@ export default function Fee() {
             const {inEdit,...nitem} = item;
             return nitem;
         })
-        let saveData = {data:newSaveData};
-        if(data.length === 1){
-            firebase.firestore().collection("fee").add(saveData).then(() => {
-                setData([...data]);
-                handleNotificationCall();
-                console.log("fee Document successfully add!");
-            })
-        }else
-        {
-            firebase.firestore().collection("fee")
-            .get()
-            .then((querySnapshot) => {
-                var docs = querySnapshot.docs;
-                if(docs.length > 0) //update documentation
-                {
-                    firebase.firestore().collection("fee").doc(docs[0].id).update(saveData).then(() => {
-                        data.sort(function(a, b){return a.Fee - b.Fee});
+        if(isNaN(dataItem.Fee)){
+            setAlert(<SweetAlert
+            warnning
+            confirmBtnText="Yes, got it"
+            confirmBtnBsStyle="delete"
+            title="Are you sure?"
+            onConfirm={warnConfirm}
+            focusConfirmBtn
+            >
+            The field value must be <b>number</b>.
+          </SweetAlert>)
+          discard(dataItem);
+        }else{
+            if(parseFloat(dataItem.Fee) < 0){
+                setAlert(<SweetAlert
+                    warnning
+                    confirmBtnText="Yes, got it"
+                    confirmBtnBsStyle="delete"
+                    title="Are you sure?"
+                    onConfirm={warnConfirm}
+                    focusConfirmBtn
+                    >
+                    The field value must be greater <b>0</b>.
+                  </SweetAlert>)
+                  discard(dataItem);
+            }else if(parseFloat(dataItem.Fee) > 100){
+                setAlert(<SweetAlert
+                    warnning
+                    confirmBtnText="Yes, got it"
+                    confirmBtnBsStyle="delete"
+                    title="Are you sure?"
+                    onConfirm={warnConfirm}
+                    focusConfirmBtn
+                    >
+                    The field value must be less <b>100</b>.
+                  </SweetAlert>)
+                  discard(dataItem);
+            }else{
+                let saveData = {data:newSaveData};
+                setAlert(
+                    <SweetAlert
+                        title={""}
+                        onConfirm={() => {}}
+                        showConfirm={false}
+                    >
+                        <CircularProgressWithLabel value={100} />
+                    </SweetAlert>)
+                if(data.length === 1){
+                    firebase.firestore().collection("fee").add(saveData).then(() => {
+                        setAlert(null);
                         setData([...data]);
                         handleNotificationCall();
-                        console.log("fee Document successfully update!");
+                        console.log("fee Document successfully add!");
+                    })
+                }else
+                {
+                    firebase.firestore().collection("fee")
+                    .get()
+                    .then((querySnapshot) => {
+                        var docs = querySnapshot.docs;
+                        if(docs.length > 0) //update documentation
+                        {
+                            firebase.firestore().collection("fee").doc(docs[0].id).update(saveData).then(() => {
+                                setAlert(null);
+                                data.sort(function(a, b){return a.Fee - b.Fee});
+                                setData([...data]);
+                                handleNotificationCall();
+                                console.log("fee Document successfully update!");
+                            })
+                        }
                     })
                 }
-            })
-            
+            }
         }
-        
-        
     }
 
     const update = (dataItem) => {
@@ -128,21 +181,70 @@ export default function Fee() {
             const {inEdit,...nitem} = item;
             return nitem;
         })
-        let saveData = {data:newSaveData};
-        firebase.firestore().collection("fee")
-            .get()
-            .then((querySnapshot) => {
-                var docs = querySnapshot.docs;
-                if(docs.length > 0) //update documentation
-                {
-                    firebase.firestore().collection("fee").doc(docs[0].id).update(saveData).then(() => {
-                        data.sort(function(a, b){return a.Fee - b.Fee});
-                        setData([...data]);
-                        handleNotificationCall();
-                        console.log("fee Document successfully update!");
+        if(isNaN(item.Fee)){
+            setAlert(<SweetAlert
+            warnning
+            confirmBtnText="Yes, got it"
+            confirmBtnBsStyle="delete"
+            title="Are you sure?"
+            onConfirm={warnConfirm}
+            focusConfirmBtn
+            >
+            The field value must be <b>number</b>.
+          </SweetAlert>)
+          cancelCurrentChanges();
+        }else{
+            if(parseFloat(item.Fee) <0){
+                setAlert(<SweetAlert
+                    warnning
+                    confirmBtnText="Yes, got it"
+                    confirmBtnBsStyle="delete"
+                    title="Are you sure?"
+                    onConfirm={warnConfirm}
+                    focusConfirmBtn
+                    >
+                    The field value must be greater than <b>0</b>.
+                  </SweetAlert>)
+                  cancelCurrentChanges();
+            }else if(parseFloat(item.Fee) >100){
+                setAlert(<SweetAlert
+                    warnning
+                    confirmBtnText="Yes, got it"
+                    confirmBtnBsStyle="delete"
+                    title="Are you sure?"
+                    onConfirm={warnConfirm}
+                    focusConfirmBtn
+                    >
+                    The field value must be less than <b>100</b>.
+                  </SweetAlert>)
+                  cancelCurrentChanges();
+            }else{
+                let saveData = {data:newSaveData};
+                setAlert(
+                    <SweetAlert
+                        title={""}
+                        onConfirm={() => {}}
+                        showConfirm={false}
+                    >
+                        <CircularProgressWithLabel value={100} />
+                    </SweetAlert>)
+                firebase.firestore().collection("fee")
+                    .get()
+                    .then((querySnapshot) => {
+                        var docs = querySnapshot.docs;
+                        if(docs.length > 0) //update documentation
+                        {
+                            firebase.firestore().collection("fee").doc(docs[0].id).update(saveData).then(() => {
+                                setAlert(null);
+                                data.sort(function(a, b){return a.Fee - b.Fee});
+                                setData([...data]);
+                                handleNotificationCall();
+                                console.log("fee Document successfully update!");
+                            })
+                        }
                     })
-                }
-            })
+            }
+        }
     }
 
     const cancel = (dataItem) => {
@@ -153,7 +255,35 @@ export default function Fee() {
     }
 
     const remove = (dataItem) => {
-        removeItem(data, dataItem);
+        deleteDataItem = dataItem;
+        setAlert(
+            <SweetAlert
+            danger
+            showCancel
+            confirmBtnText="Yes, delete it!"
+            confirmBtnBsStyle="delete"
+            title="Are you sure?"
+            onConfirm={deleteRequest}
+            onCancel={deleteCancel}
+            focusCancelBtn
+            >
+            You will not be able to recover this fee(<b>{dataItem.Fee} %</b>).
+          </SweetAlert>
+          );
+        
+        
+    }
+    const deleteRequest = () => {
+        setAlert(null)
+        setAlert(
+        <SweetAlert
+            title={""}
+            onConfirm={() => {}}
+            showConfirm={false}
+        >
+            <CircularProgressWithLabel value={50} />
+        </SweetAlert>)
+        removeItem(data, deleteDataItem);
         let id = 0;
         const newSaveData = data.map(item => {
             const {inEdit,...nitem} = item;
@@ -168,15 +298,33 @@ export default function Fee() {
                 var docs = querySnapshot.docs;
                 if(docs.length > 0) //update documentation
                 {
+                    setAlert(
+                        <SweetAlert
+                            title={""}
+                            onConfirm={() => {}}
+                            showConfirm={false}
+                        >
+                            <CircularProgressWithLabel value={100} />
+                        </SweetAlert>)
                     firebase.firestore().collection("fee").doc(docs[0].id).update(saveData).then(() => {
                         data.sort(function(a, b){return a.Fee - b.Fee});
                         setData([...newSaveData]);
-                        handleNotificationCall();
+                        // handleNotificationCall();
+                        setAlert(
+                            <SweetAlert success title="Deleted" onConfirm={deletedConfirm}>
+                              The fee has been deleted.
+                            </SweetAlert>
+                            )
                         console.log("fee Document successfully delete update!");
                     })
                 }
             })
-        
+    }
+    const deleteCancel = () => {
+        setAlert(null);
+    }
+    const deletedConfirm = () => {
+        setAlert(null);
     }
     const removeItem = (data, item) => {
         let index = data.findIndex(p => p === item || (item.ID && p.ID === item.ID));
@@ -229,6 +377,7 @@ export default function Fee() {
             <ToastContainer 
                 className={classes.toastsContainer}
             />
+            {alert}
             {loading ?    
             <section {...containerProps} style={{textAlign:"center",marginTop:window.innerHeight/2 - 100}}>
                 {indicatorEl} 

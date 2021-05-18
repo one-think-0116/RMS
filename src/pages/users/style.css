@@ -30,9 +30,7 @@
   }
  
   
-  .btn {
-    border-radius: 25px;
-  }
+
   
   footer p {
     color: rgba(0, 0, 0, 0.6);
@@ -78,7 +76,7 @@
     height: 430px;
     position: absolute;
     top: -8px;
-    left: 8px;
+    left: 0px;
     overflow: hidden;
   }
   .wrap:before, .wrap:after {
@@ -163,9 +161,33 @@
     padding: 12px 16px; /* Some padding */
     font-size: 16px; /* Set a font size */
     cursor: pointer; /* Mouse pointer on hover */
+    text-decoration: none;
   }
   
   /* Darker background on mouse-over */
   .btn:hover {
     background-color: RoyalBlue;
+  }
+  .btn {
+    border-radius: 25px;
+  }
+  .btn-delete {
+    background-color: #FF5C93; /* Blue background */
+    border: none; /* Remove borders */
+    color: white; /* White text */
+    padding: 12px 16px; /* Some padding */
+    font-size: 16px; /* Set a font size */
+    cursor: pointer; /* Mouse pointer on hover */
+    text-decoration: none;
+  }
+  
+  /* Darker background on mouse-over */
+  .btn-delete:hover {
+    background-color: #ff0f60;
+  }
+  .btn-delete {
+    border-radius: 25px;
+  }
+  .k-datepicker {
+    width: 75%!important;
   }

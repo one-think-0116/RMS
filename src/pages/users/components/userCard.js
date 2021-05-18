@@ -35,7 +35,8 @@ class UserCard extends Component {
                     <p className="phone center">Next Evaluation Date  :   {this.props.info.nextEvaluationDate}</p>
                     <p className="phone center">Other   :   {this.props.info.other}</p>
                     <Grid item xs={12}  style={{textAlign: "center"}}>
-                    <button className="btn" id={this.props.info.id} onClick={this.props.update}> Update Info</button>
+                    <button className="btn" id={this.props.info.id} onClick={this.props.update}  style={{marginRight:15}}> Update User</button>
+                    <button className="btn-delete" name={this.props.info.name} id={this.props.info.email} onClick={this.props.deleteUser}> Delete User</button>
                       {/* <Button variant="outlined" id={this.props.info.id} startIcon={<UpdateIcon />} onClick={this.props.update}>
                         Update {this.props.info.name}
                       </Button> */}

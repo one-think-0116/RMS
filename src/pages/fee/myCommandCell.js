@@ -33,7 +33,8 @@ export const MyCommandCell = props => {
       <button
         className="k-button k-grid-remove-command k-fiveth"
         onClick={() =>
-          window.confirm("Confirm deleting: " + dataItem.Fee + "% dealer fee") &&
+          // window.confirm("Confirm deleting: " + dataItem.Fee + "% dealer fee") &&
+          // props.remove(dataItem)
           props.remove(dataItem)
         }
       >

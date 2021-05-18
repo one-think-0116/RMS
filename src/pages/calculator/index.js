@@ -654,6 +654,16 @@ useEffect(() => {
           var docs = querySnapshot.docs;
           if(docs.length > 0) //update documentation
           {
+            if(updateData.C3 === "" && updateData.C4 === "" && updateData.C7 === "" && updateData.C8 === "" && updateData.C9 === ""){
+              if(docs[0].data().allow){
+                setLoading(false);
+                style();
+              }else{
+                handleNotificationCall()
+              }
+              
+            }else{
+              // console.log("update calculaors")
               firebase.firestore().collection("calculators").doc(docs[0].id).update(updateData).then(() => {
                   if(docs[0].data().allow){
                     setLoading(false);
@@ -664,6 +674,7 @@ useEffect(() => {
                     {handleNotificationCall();cnt = 0;}
                   }
               })
+            }
           }
       })
   })

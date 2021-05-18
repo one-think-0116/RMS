@@ -14,8 +14,9 @@ import Modal from 'react-awesome-modal';
 import { DatePicker } from '@progress/kendo-react-dateinputs';
 import { FirebaseContext } from '../../components/Firebase/context';
 import { useLoading, ThreeDots} from '@agney/react-loading';
+import SweetAlert from 'react-bootstrap-sweetalert';
+import { CircularProgressWithLabel } from "../../components/CircularProgressWithLabel"
 
-// data
 
 // const finalUsers = [
 //   {
@@ -31,74 +32,10 @@ import { useLoading, ThreeDots} from '@agney/react-loading';
 //     allow:true,
 //     other:""
 //   },
-//   {
-//     id: 'b',
-//     club:"Bronze",
-//     teamName:"Texas",
-//     name: 'Eric Nazzal',
-//     email: 'onethink0162@gmail.com',
-//     systemNumber: 'TX',
-//     evaluationDate:"12/31/20",
-//     lastQtrlySales:"Door Knocker",
-//     nextEvaluationDate:"3/31/21",
-//     allow:true,
-//     other:"Door Knocker"
-//   },
-//   {
-//     id: 'c',
-//     club:"Silver",
-//     teamName:"Texas",
-//     name: 'Chandler Brooks',
-//     email: 'odnethink016@gmail.com',
-//     systemNumber: 'TX',
-//     evaluationDate:"12/31/20",
-//     lastQtrlySales:6,
-//     nextEvaluationDate:"3/31/21",
-//     allow:true,
-//     other:""
-//   },
-//   {
-//     id: 'a',
-//     club:"Silver",
-//     teamName:"Texas",
-//     name: 'Peter Kim',
-//     email: 'onethink0146@gmail.com',
-//     systemNumber: 'TX',
-//     evaluationDate:"12/31/20",
-//     lastQtrlySales:6,
-//     nextEvaluationDate:"3/31/21",
-//     allow:true,
-//     other:""
-//   },
-//   {
-//     id: 'f',
-//     club:"Chairman",
-//     teamName:"Texas",
-//     name: 'Tim Chung',
-//     email: 'onethink0616@gmail.com',
-//     systemNumber: 'AZ/TX - remote',
-//     evaluationDate:"12/31/20",
-//     lastQtrlySales:"CC 8-12/mo",
-//     nextEvaluationDate:"3/31/21",
-//     allow:true,
-//     other:""
-//   },
-//   {
-//     id: 'd',
-//     club:"Pending",
-//     teamName:"Pending",
-//     name: 'secret',
-//     email: 'onethink01609@gmail.com',
-//     systemNumber: '',
-//     evaluationDate:"12/31/20",
-//     lastQtrlySales:"",
-//     nextEvaluationDate:"12/31/20",
-//     allow:false,
-//     other:""
-//   },
 // ]
-
+let deletedUserEmail;
 let selectedUserEmail;
+const sweetAlertStyle = { display: "block", marginTop: "-100px" }
 export default function Users() {
   const { containerProps, indicatorEl } = useLoading({
     loading: true,
@@ -117,8 +54,11 @@ export default function Users() {
   const [nextEvaluationDate,setNextEvaluationDate] = useState("");
   const [other,setOther] = useState("");
   const [dropInfo,setDropInfo] = useState({});
+  const [alert,setAlert] = React.useState(null);
+
+
   const openModal = () => {
-    console.log("ss",systemNumber)
+    // console.log("ss",systemNumber)
    setModal(true);
   }
 
@@ -143,7 +83,7 @@ export default function Users() {
 
     const items = Array.from(characters);
     if(updateFlag){
-      console.log("f",selectedUserEmail)
+      // console.log("f",selectedUserEmail)
       characters.map((item) => {
         if(item.email === selectedUserEmail){
           item.teamName = team;
@@ -296,6 +236,89 @@ export default function Users() {
       setLoading(false);
     })
   }, [])
+  
+  const deleteUser = (e) => {
+    deletedUserEmail = e.target.id;
+    setAlert(
+      <SweetAlert
+      danger
+      showCancel
+      confirmBtnText="Yes, delete it!"
+      confirmBtnBsStyle="delete"
+      title="Are you sure?"
+      onConfirm={deleteRequest}
+      onCancel={deleteCancel}
+      focusCancelBtn
+      >
+      You will not be able to recover this user(<b>{e.target.name}</b>).
+    </SweetAlert>
+    );
+  }
+  const deleteRequest = () => {
+    setAlert(null)
+    setAlert(
+      <SweetAlert
+        title={""}
+        onConfirm={() => {}}
+        showConfirm={false}
+      >
+        <CircularProgressWithLabel value={30} />
+      </SweetAlert>)
+    
+    var usersDBRef = firebase.firestore().collection("users");
+    var calculatorsDBRef = firebase.firestore().collection("calculators");
+    var addersDBRef = firebase.firestore().collection("adders");
+    // console.log("email",deletedUserEmail)
+    calculatorsDBRef.where("email" ,"==", deletedUserEmail).get().then((querySnapshot) => {
+      var docs = querySnapshot.docs;
+      calculatorsDBRef.doc(docs[0].id).delete().then((result) => {
+        // setAlert(null)
+        setAlert(
+          <SweetAlert
+            title={""}
+            onConfirm={() => {}}
+            showConfirm={false}
+          >
+            <CircularProgressWithLabel value={60} />
+          </SweetAlert>)
+        addersDBRef.where("email" ,"==", deletedUserEmail).get().then((querySnapshot) => {
+          var docs = querySnapshot.docs;
+          addersDBRef.doc(docs[0].id).delete().then((result) => {
+            // setAlert(null)
+            setAlert(
+              <SweetAlert
+                title={""}
+                onConfirm={() => {}}
+                showConfirm={false}
+              >
+                <CircularProgressWithLabel value={100} />
+              </SweetAlert>)
+            usersDBRef.where("email" ,"==", deletedUserEmail).get().then((querySnapshot) => {
+              var docs = querySnapshot.docs;
+              usersDBRef.doc(docs[0].id).delete().then((result) => {
+                const newCharacters = [];
+                characters.forEach(item => {
+                  if(item.email !== deletedUserEmail) newCharacters.push(item);
+                })
+                updateCharacters(newCharacters);
+                setAlert(
+                <SweetAlert success title="Deleted" onConfirm={deletedConfirm}>
+                  The user has been deleted.
+                </SweetAlert>
+                )
+              })
+            })
+          })
+        })
+      })
+    })
+  }
+  const deleteCancel = () => {
+    setAlert(null)
+  }
+  const deletedConfirm = () => {
+    setAlert(null)
+  }
   return (
     <>
      {loading ?    
@@ -303,6 +326,7 @@ export default function Users() {
                 {indicatorEl} {/* renders only while loading */}
             </section> :
             <>
+            {alert}
             <PageTitle title="" />
             <Grid container spacing={4}>
             <DragDropContext onDragEnd={handleOnDragEnd}>
@@ -318,7 +342,7 @@ export default function Users() {
                                       <Draggable key={item.id} draggableId={item.id} index={index}>
                                         {(provided) => (
                                           <li ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} >
-                                            <UserCard info={item} update={update}/>
+                                            <UserCard info={item} update={update} deleteUser={deleteUser}/>
                                           </li>
                                         )}
                                       </Draggable>
@@ -344,7 +368,7 @@ export default function Users() {
                                       <Draggable key={item.id} draggableId={item.id} index={index}>
                                         {(provided) => (
                                           <li ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} >
-                                            <UserCard info={item} update={update}/>
+                                            <UserCard info={item} update={update} deleteUser={deleteUser}/>
                                           </li>
                                         )}
                                       </Draggable>
@@ -370,7 +394,7 @@ export default function Users() {
                                       <Draggable key={item.id} draggableId={item.id} index={index}>
                                         {(provided) => (
                                           <li ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} >
-                                            <UserCard info={item} update={update}/>
+                                            <UserCard info={item} update={update} deleteUser={deleteUser}/>
                                           </li>
                                         )}
                                       </Draggable>
@@ -396,7 +420,7 @@ export default function Users() {
                                       <Draggable key={item.id} draggableId={item.id} index={index}>
                                         {(provided) => (
                                           <li ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} >
-                                            <UserCard info={item} update={update}/>
+                                            <UserCard info={item} update={update} deleteUser={deleteUser}/>
                                           </li>
                                         )}
                                       </Draggable>
@@ -430,7 +454,7 @@ export default function Users() {
                           name="team"
                           value={team}
                           onChange={teamChange}
-                          style={{textAlign: "center",}}
+                          style={{textAlign: "center",width:"75%"}}
                         >
                           <option value={"Arizona"}>Arizona Team</option>
                           <option value={"Texas"}>Texas Team</option>
@@ -446,7 +470,7 @@ export default function Users() {
                           name="systemNumber"
                           value={systemNumber}
                           onChange={systemChange}
-                          style={{textAlign: "center",}}
+                          style={{textAlign: "center",width:"75%"}}
                         >
                           <option value={"TX"}>TX</option>
                           <option value={"AZ"}>AZ</option>
@@ -470,7 +494,7 @@ export default function Users() {
                         Last Qtrly Sales
                       </Grid>
                       <Grid item xs={6}  style={{textAlign: "center"}}>
-                        <input type="text" defaultValue={lastQtrlySales} onChange={ salesChange}/>
+                        <input type="text" defaultValue={lastQtrlySales} onChange={ salesChange} style={{width:"75%"}}/>
                       </Grid>        
                     </div>
                     <div style={{display:"flex",marginTop:15}}>
@@ -478,7 +502,7 @@ export default function Users() {
                         Next Evaluation Date
                       </Grid>
                       <Grid item xs={6}  style={{textAlign: "center"}}>
-                        <DatePicker value={new Date(nextEvaluationDate)} defaultShow={false} onChange={nextEvaluationDateChange}/>
+                        <DatePicker value={new Date(nextEvaluationDate)} defaultShow={false} onChange={nextEvaluationDateChange} style={{width:"75%"}}/>
                       </Grid>        
                     </div>
                     <div style={{display:"flex",marginTop:15}}>
@@ -486,7 +510,7 @@ export default function Users() {
                         Other
                       </Grid>
                       <Grid item xs={6}  style={{textAlign: "center"}}>
-                        <input type="text" defaultValue={other}  onChange={ otherChange}/>
+                        <input type="text" defaultValue={other}  onChange={ otherChange}  style={{width:"75%"}}/>
                       </Grid>        
                     </div>
                     <div style={{display:"flex",marginTop:15}}>
