@@ -29,6 +29,9 @@ import Users from "../../pages/users";
 import Guide from "../../pages/guide";
 import Fee from "../../pages/fee";
 import Cash from "../../pages/cash";
+import Battery from "../../pages/battery";
+import Selfgen from "../../pages/selfgen";
+import Module from "../../pages/module";
 
 
 // context
@@ -64,6 +67,9 @@ function Layout(props) {
               <PrivateRoute path="/app/guide" component={Guide} />
               <PrivateRoute path="/app/fee" component={Fee} />
               <PrivateRoute path="/app/cash" component={Cash} />
+              <PrivateRoute path="/app/battery_type" component={Battery} />
+              <PrivateRoute path="/app/selfgen_lead" component={Selfgen} />
+              <PrivateRoute path="/app/module" component={Module} />
               {/* <Route
                 exact
                 path="/app/ui"

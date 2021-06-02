@@ -1,0 +1,28 @@
+.centerClass ,.k-header {
+    text-align: center!important;
+}
+ .k-secondary {
+    border-color: #E91E63!important;
+    background-color: #E91E63!important;
+    color: white!important;
+    background-image: linear-gradient(rgba(255, 138, 88, 0), rgba(255, 138, 88, 0.2))!important;
+ }
+ 
+ .k-third {
+    border-color: #2E7D32!important;
+    background-color: #2E7D32!important;
+    color: white!important;
+    background-image: linear-gradient(rgba(255, 138, 88, 0), rgba(255, 138, 88, 0.2))!important;
+ }
+ .k-fourth {
+    border-color: #9C27B0!important;
+    background-color: #9C27B0!important;
+    color: white!important;
+    background-image: linear-gradient(rgba(255, 138, 88, 0), rgba(255, 138, 88, 0.2))!important;
+ }
+ .k-fiveth {
+    border-color: #FDD835!important;
+    background-color: #FDD835!important;
+    color: white!important;
+    background-image: linear-gradient(rgba(255, 138, 88, 0), rgba(255, 138, 88, 0.2))!important;
+ }

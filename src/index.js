@@ -10,17 +10,21 @@ import { UserProvider } from "./context/UserContext";
 import FirebaseProvider  from './components/Firebase/context';
 import '@progress/kendo-theme-default/dist/all.css';
 import 'react-bootstrap-sweetalert/dist/styles/SweetAlertStyles';
+import { Provider } from "react-redux";
+import store from './redux/store'
 ReactDOM.render(
-  <FirebaseProvider>
-  <LayoutProvider>
-    <UserProvider>
-      <ThemeProvider theme={Themes.default}>
-        <CssBaseline />
-          <App />
-      </ThemeProvider>
-    </UserProvider>
-  </LayoutProvider>
-  </FirebaseProvider>,
+  <Provider store={store}>
+    <FirebaseProvider>
+      <LayoutProvider>
+        <UserProvider>
+          <ThemeProvider theme={Themes.default}>
+            <CssBaseline />
+              <App />
+          </ThemeProvider>
+        </UserProvider>
+      </LayoutProvider>
+    </FirebaseProvider>
+  </Provider>,
   document.getElementById("root"),
 );
 

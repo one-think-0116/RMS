@@ -10,6 +10,10 @@ import {
   MenuBook as MenuBookIcon,
 } from "@material-ui/icons";
 import ReceiptIcon from '@material-ui/icons/Receipt';
+import TextsmsIcon from '@material-ui/icons/Textsms';
+import BusinessIcon from '@material-ui/icons/Business';
+import TollIcon from '@material-ui/icons/Toll';
+import BatteryCharging80Icon from '@material-ui/icons/BatteryCharging80';
 import LocalAtmSharpIcon from '@material-ui/icons/LocalAtmSharp';
 import { useTheme } from "@material-ui/styles";
 import { withRouter } from "react-router-dom";
@@ -38,8 +42,12 @@ const admin_structure = [
   { id: 1, label: "Calculator", link: "/app/calculator", icon: <AttachMoneyIcon /> },
   { id: 2, label: "Adders", link: "/app/adders", icon: <PlaylistAddIcon /> },
   { id: 3, type: "divider" },
-  { id: 7, label: "Dealer Fee", link: "/app/fee", icon: <ReceiptIcon /> },
+  // { id: 9, label: "Message", link: "/app/message", icon: <TextsmsIcon /> },
+  { id: 10, label: "Selfgen Lead", link: "/app/selfgen_lead", icon: <BusinessIcon /> },
+  { id: 11, label: "Module", link: "/app/module", icon: <TollIcon /> },
+  { id: 12, label: "Battery Type", link: "/app/battery_type", icon: <BatteryCharging80Icon /> },
   { id: 8, label: "Cash", link: "/app/cash", icon: <LocalAtmSharpIcon /> },
+  { id: 7, label: "Dealer Fee", link: "/app/fee", icon: <ReceiptIcon /> },
   { id: 4, label: "Formulas", link: "/app/formulas", icon: <LibraryBooksIcon /> },
   { id: 5, label: "Users", link: "/app/users", icon: <PeopleIcon /> },
   { id: 6, label: "Guide", link: "/app/guide", icon: <MenuBookIcon /> },
@@ -47,7 +55,9 @@ const admin_structure = [
 const seller_structure = [
   { id: 0, label: "Calculator", link: "/app/calculator", icon: <AttachMoneyIcon /> },
   { id: 1, label: "Adders", link: "/app/adders", icon: <PlaylistAddIcon /> },
+  // { id: 2, label: "Message", link: "/app/message", icon: <TextsmsIcon /> },
 ];
+  
 
 function Sidebar({ location }) {
   //

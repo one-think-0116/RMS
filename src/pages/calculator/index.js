@@ -68,6 +68,9 @@ export default function Calculator() {
   const [FSelfGen, setFSelfGen] = React.useState('');
   const [dealerFee, setDealerFee] = React.useState([]);
   const [cash, setCash] = React.useState([]);
+  const [battery, setBattery] = React.useState([]);
+  const [mmodule, setModule] = React.useState([]);
+  const [selfgen_lead, setSelfgenLead] = React.useState([]);
 
       //#####################################toast########################################################
       const sendNotification = (componentProps, options) => {
@@ -104,61 +107,8 @@ export default function Calculator() {
           
     //#####################################toast########################################################
 
-  // const handleBlur = (event) => {
-  //   console.log("handleBlur")
-  //   switch(event.target.name){
-  //     case "C3":
-  //       setC3(event.target.value);
-  //     break;
-  //     case "C4":
-  //       setC4(event.target.value);
-  //     break;
-  //     case "C10":
-  //       setC10(event.target.value);
-  //     break;
-  //     case "C11":
-  //       setC11(event.target.value.split("$")[1]);
-  //     break;
-  //     // disabled
-  //     // case "C13":
-  //     //   setC13(event.target.value);
-  //     // break;
-  //     // case "C15":
-  //     //   setC15(event.target.value);
-  //     // break;
-  //     // case "C16":
-  //     //   setC16(event.target.value);
-  //     // break;
-  //     // case "C17":
-  //     //   setC17(event.target.value);
-  //     // break;
-  //     // case "C18":
-  //     //   setC18(event.target.value);
-  //     // break;
-  //     // case "C19":
-  //     //   setC19(event.target.value);
-  //     // break;
-  //     // case "C20":
-  //     //   setC20(event.target.value);
-  //     // break;
-  //     // case "C21":
-  //     //   setC21(event.target.value);
-  //     // break;
-  //     default:
-  //     break;
-  //   }
-
-  // }
   const handleChange = (event) => {
-    // console.log("handle change")
     switch(event.target.name){
-      
-      // case "C5":
-      //   setC5(event.target.value);
-      // break;
-      // case "C6":
-      //   setC6(event.target.value);
-      // break;
       case "C7":
         setC7(event.target.value);
       break;
@@ -180,27 +130,6 @@ export default function Calculator() {
       case "C11":
         setC11(event.target.value);
       break;
-      // case "C21":
-      //   setC21(event.target.value);
-      // break;
-      // case "F14":
-      //   setF14(event.target.value);
-      // break;
-      // case "F15":
-      //   setF15(event.target.value);
-      // break;
-      // case "F17":
-      //   setF17(event.target.value);
-      // break;
-      // case "F18":
-      //   setF18(event.target.value);
-      // break;
-      // case "F19":
-      //   setF19(event.target.value);
-      // break;
-      // case "F20":
-      //   setF20(event.target.value);
-      // break;
     }
   };
   const getNum = (str) => {
@@ -264,48 +193,65 @@ export default function Calculator() {
                     const feedata = docfee.data().data;
                     feedata.sort(function(a, b){return a.Fee - b.Fee});
                     setDealerFee(feedata);
-                    // firebase.firestore().collection("fee").get().then((query) => {
-                    //   query.forEach((docfee) => {
-                    //     const feedata = docfee.data().data;
-                    //     feedata.sort(function(a, b){return a.Fee - b.Fee});
-                    //     setDealerFee(feedata);
-                    //   })
-                    // })
-                    firebase.firestore().collection("cash").get().then((query) => {
-                      query.forEach((doccash) => {
-                        const cashData = doccash.data().data;
-                        cashData.sort(function(a, b){return a.cash - b.cash});
-                        setCash(cashData);
+                    firebase.firestore().collection("selfgen").get().then((query) => {
+                      query.forEach((docselfgen) => {
+                        const selfgendata = docselfgen.data().data;
+                        selfgendata.sort(function(a, b){return a.ID - b.ID});
+                        setSelfgenLead(selfgendata);
 
-                        setC3(doc.data().C3);
-                        setC4(doc.data().C4);
-                        setC5(doc.data().C5);
-                        setC6(doc.data().C6);
-                        setC7(doc.data().C7);
-                        setC8(doc.data().C8);
-                        setC9(doc.data().C9);
-                        setC10(doc.data().C10);
-                        setC11(doc.data().C11);
-                        setC12("$" + doc.data().C12);
-                        setC13(doc.data().C13);
-                        setC14(doc.data().C14);
-                        setC15(doc.data().C15);
-                        setC16(doc.data().C16);
-                        setC17(doc.data().C17);
-                        // console.log("dbC18",doc.data().C18,doc.data())
-                        if(doc.data().C18 === "") setC18("0");
-                        else setC18(doc.data().C18);
-                        // setC18(doc.data().C18);
-                        setC19(doc.data().C19);
-                        setC20(doc.data().C20);
-                        setC21(doc.data().C21);
-                        setF14(doc.data().F14);
-                        setF15(doc.data().F15);
-                        setF17(doc.data().F17);
-                        setF18(doc.data().F18);
-                        setF19(doc.data().F19);
-                        setF20(doc.data().F20);
-                        setFSelfGen(doc.data().FSelfGen);
+                        firebase.firestore().collection("module").get().then((query) => {
+                          query.forEach((docmodule) => {
+                            const moduledata = docmodule.data().data;
+                            moduledata.sort(function(a, b){return a.ID - b.ID});
+                            setModule(moduledata);
+                            
+                            firebase.firestore().collection("battery").get().then((query) => {
+                              query.forEach((docbattery) => {
+                                const batterydata = docbattery.data().data;
+                                batterydata.sort(function(a, b){return a.ID - b.ID});
+                                setBattery(batterydata);
+                                
+                                firebase.firestore().collection("cash").get().then((query) => {
+                                  query.forEach((doccash) => {
+                                    const cashData = doccash.data().data;
+                                    cashData.sort(function(a, b){return a.cash - b.cash});
+                                    setCash(cashData);
+            
+                                    setC3(doc.data().C3);
+                                    setC4(doc.data().C4);
+                                    setC5(doc.data().C5);
+                                    setC6(doc.data().C6);
+                                    setC7(doc.data().C7);
+                                    setC8(doc.data().C8);
+                                    setC9(doc.data().C9);
+                                    setC10(doc.data().C10);
+                                    setC11(doc.data().C11);
+                                    setC12("$" + doc.data().C12);
+                                    setC13(doc.data().C13);
+                                    setC14(doc.data().C14);
+                                    setC15(doc.data().C15);
+                                    setC16(doc.data().C16);
+                                    setC17(doc.data().C17);
+                                    // console.log("dbC18",doc.data().C18,doc.data())
+                                    if(doc.data().C18 === "") setC18("0");
+                                    else setC18(doc.data().C18);
+                                    // setC18(doc.data().C18);
+                                    setC19(doc.data().C19);
+                                    setC20(doc.data().C20);
+                                    setC21(doc.data().C21);
+                                    setF14(doc.data().F14);
+                                    setF15(doc.data().F15);
+                                    setF17(doc.data().F17);
+                                    setF18(doc.data().F18);
+                                    setF19(doc.data().F19);
+                                    setF20(doc.data().F20);
+                                    setFSelfGen(doc.data().FSelfGen);
+                                  })
+                                })
+                              })
+                            })
+                          })
+                        })
                       })
                     })
                   })
@@ -557,13 +503,13 @@ useEffect(() => {
     if(fS5 > fI5) fV5 = fData.B5*fH5;
     else fV5 = 0;
     fV5 = cutDecimal(fV5,2,"Number");
-    //Y4=IF(CALCULATOR!$C$7="Self Gen",D4*H4,0)
+    //Y4=IF(CALCULATOR!$C$7="Self",D4*H4,0)
     var fY4,fY5;
-    if(C7 === "Self Gen") fY4 = fData.D4*fH4;
+    if(C7 === "Self") fY4 = fData.D4*fH4;
     else fY4 = 0;
     fY4 = cutDecimal(fY4,2,"Number");
-    //Y5=IF(CALCULATOR!$C$7="Self Gen",D5*H5,0)
-    if(C7 === "Self Gen") fY5 = fData.D5*fH5;
+    //Y5=IF(CALCULATOR!$C$7="Self",D5*H5,0)
+    if(C7 === "Self") fY5 = fData.D5*fH5;
     else fY5 = 0;
     fY5 = cutDecimal(fY5,2,"Number");
     //Z4=U4*H4
@@ -655,15 +601,16 @@ useEffect(() => {
           if(docs.length > 0) //update documentation
           {
             if(updateData.C3 === "" && updateData.C4 === "" && updateData.C7 === "" && updateData.C8 === "" && updateData.C9 === ""){
+              console.log("first calculaors")
               if(docs[0].data().allow){
-                setLoading(false);
+                // setLoading(false);
                 style();
               }else{
                 handleNotificationCall()
               }
               
             }else{
-              // console.log("update calculaors")
+              console.log("second calculaors")
               firebase.firestore().collection("calculators").doc(docs[0].id).update(updateData).then(() => {
                   if(docs[0].data().allow){
                     setLoading(false);
@@ -783,8 +730,11 @@ return(
                     onChange={handleChange}
                     style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: "75%"}}
                   >
-                    <MenuItem value={"Self Gen"}>Self</MenuItem>
-                    <MenuItem value={"Company"}>Company</MenuItem>
+                    { selfgen_lead.map( item => {
+                      return (<MenuItem key={item.ID} value={item.selfgen}>{item.selfgen}</MenuItem>)
+                    })}
+                    {/* <MenuItem value={"Self Gen"}>Self</MenuItem>
+                    <MenuItem value={"Company"}>Company</MenuItem> */}
                   </Select>
                 </Grid>
                 <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
@@ -798,8 +748,11 @@ return(
                     onChange={handleChange}
                     style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: "75%"}}
                   >
-                    <MenuItem value={"REC 370"}>REC 370</MenuItem>
-                    <MenuItem value={"Mission 345"}>Mission 345</MenuItem>
+                    { mmodule.map( item => {
+                      return (<MenuItem key={item.ID} value={item.module}>{item.module}</MenuItem>)
+                    })}
+                    {/* <MenuItem value={"REC 370"}>REC 370</MenuItem>
+                    <MenuItem value={"Mission 345"}>Mission 345</MenuItem> */}
                   </Select>
                 </Grid>
                 <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
@@ -813,11 +766,14 @@ return(
                     onChange={handleChange}
                     style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: "75%"}}
                   >
-                    <MenuItem value={"None"}>None</MenuItem>
+                    { battery.map( item => {
+                      return (<MenuItem key={item.ID} value={item.battery}>{item.battery}</MenuItem>)
+                    })}
+                    {/* <MenuItem value={"None"}>None</MenuItem>
                     <MenuItem value={"Enphase 3kw"}>Enphase 3kw</MenuItem>
                     <MenuItem value={"Enphase 10kw"}>Enphase 10kw</MenuItem>
                     <MenuItem value={"Panasonic 11kw"}>Panasonic 11kw</MenuItem>
-                    <MenuItem value={"Panasonic 17kw"}>Panasonic 17kw</MenuItem>
+                    <MenuItem value={"Panasonic 17kw"}>Panasonic 17kw</MenuItem> */}
                   </Select>
                 </Grid>
                 <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>

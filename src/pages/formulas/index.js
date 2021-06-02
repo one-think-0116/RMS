@@ -214,12 +214,12 @@ import {
             if(parseFloat(getNum(newdata[4].S)) > parseFloat(getNum(newdata[4].I))) newdata[4].V = ((parseFloat(getNum(newdata[4].B)))*(parseFloat(getNum(newdata[4].H))));
             else newdata[4].V = 0;
             newdata[4].V = cutDecimal(newdata[4].V,2,"Number");
-            //Y4=IF(CALCULATOR!$C$7="Self Gen",D4*H4,0)
-            if(calcData.C7 === "Self Gen") newdata[3].Y = ((parseFloat(getNum(newdata[3].D)))*(parseFloat(getNum(newdata[3].H))));
+            //Y4=IF(CALCULATOR!$C$7="Self",D4*H4,0)
+            if(calcData.C7 === "Self") newdata[3].Y = ((parseFloat(getNum(newdata[3].D)))*(parseFloat(getNum(newdata[3].H))));
             else newdata[3].Y = 0;
             newdata[3].Y = cutDecimal(newdata[3].Y,2,"Number");
-            //Y5=IF(CALCULATOR!$C$7="Self Gen",D5*H5,0)
-            if(calcData.C7 === "Self Gen") newdata[4].Y = ((parseFloat(getNum(newdata[4].D)))*(parseFloat(getNum(newdata[4].H))));
+            //Y5=IF(CALCULATOR!$C$7="Self",D5*H5,0)
+            if(calcData.C7 === "Self") newdata[4].Y = ((parseFloat(getNum(newdata[4].D)))*(parseFloat(getNum(newdata[4].H))));
             else newdata[4].Y = 0;
             newdata[4].Y = cutDecimal(newdata[4].Y,2,"Number");
             //Z4=U4*H4
@@ -462,12 +462,12 @@ import {
                         if(parseFloat(getNum(dbData[4].S)) > parseFloat(getNum(dbData[4].I))) dbData[4].V = ((parseFloat(getNum(dbData[4].B)))*(parseFloat(getNum(dbData[4].H))));
                         else dbData[4].V = 0;
                         dbData[4].V = cutDecimal(dbData[4].V,2,"Number");
-                        //Y4=IF(CALCULATOR!$C$7="Self Gen",D4*H4,0)
-                        if(calcData.C7 === "Self Gen") dbData[3].Y = ((parseFloat(getNum(dbData[3].D)))*(parseFloat(getNum(dbData[3].H))));
+                        //Y4=IF(CALCULATOR!$C$7="Self",D4*H4,0)
+                        if(calcData.C7 === "Self") dbData[3].Y = ((parseFloat(getNum(dbData[3].D)))*(parseFloat(getNum(dbData[3].H))));
                         else dbData[3].Y = 0;
                         dbData[3].Y = cutDecimal(dbData[3].Y,2,"Number");
-                        //Y5=IF(CALCULATOR!$C$7="Self Gen",D5*H5,0)
-                        if(calcData.C7 === "Self Gen") dbData[4].Y = ((parseFloat(getNum(dbData[4].D)))*(parseFloat(getNum(dbData[4].H))));
+                        //Y5=IF(CALCULATOR!$C$7="Self",D5*H5,0)
+                        if(calcData.C7 === "Self") dbData[4].Y = ((parseFloat(getNum(dbData[4].D)))*(parseFloat(getNum(dbData[4].H))));
                         else dbData[4].Y = 0;
                         dbData[4].Y = cutDecimal(dbData[4].Y,2,"Number");
                         //Z4=U4*H4
