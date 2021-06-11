@@ -1,15 +1,12 @@
-import React, { useContext } from "react";
+import React, { useContext,useEffect } from "react";
 import {
   Grid,
   Typography,
   Button,
 } from "@material-ui/core";
+import CircularLoading from "../../components/CircularLoading";
+
 import { withRouter } from "react-router-dom";
-import data from "./data.json"
-import jwt from "jwt-simple"
-import { FirebaseContext } from '../../components/Firebase/context';
-
-
 
 // styles
 import useStyles from "./styles";
@@ -17,99 +14,120 @@ import useStyles from "./styles";
 // logo
 import logo from "./logo.svg";
 
-// context
-import { useUserDispatch} from "../../context/UserContext";
+import { useSelector, useDispatch } from "react-redux";
+import { FirebaseContext } from '../../redux';
 
 function Login(props) {
+  const { api } = useContext(FirebaseContext);
+  const {
+    signIn,
+    checkUser,
+    fetchUser,
+    fetchCalculator,
+    fetchAdders,
+    fetchFormulas,
+    fetchBattery,
+    fetchCash,
+    fetchFee,
+    fetchGuide,
+    fetchModule,
+    fetchSelfGen,
+    fetchUsers,
+    authenticate,
+    checkStatus
+  } = api;
+  const auth = useSelector(state => state.auth);
+  const adders = useSelector(state => state.adders);
+  const calculator = useSelector(state => state.calculator);
+  const battery = useSelector(state => state.battery);
+  const cash = useSelector(state => state.cash);
+  const fee = useSelector(state => state.fee);
+  const guide = useSelector(state => state.guide);
+  const modules = useSelector(state => state.modules);
+  const selfgen = useSelector(state => state.selfgen);
+  const users = useSelector(state => state.users);
+  const authenticated = useSelector(state => state.authenticated);
+  const dispatch = useDispatch();
   var classes = useStyles();
-
-  // global
-  var userDispatch = useUserDispatch();
-  const firebase = useContext(FirebaseContext);
-  // local
+  useEffect(() => {
+    dispatch(checkStatus());
+  }, [])
+  useEffect(() => {
+    if(auth.refinfo){
+      let uid = auth.refinfo.uid
+      dispatch(checkUser(uid));
+    }
+  }, [auth.refinfo])
+  useEffect(() => {
+    if(auth.check){
+      dispatch(fetchUser());
+    }
+  }, [auth.check])
+  const getData = async (role) =>  {
+    let uid = auth.refinfo.uid
+    if(role === "seller"){
+      await dispatch(fetchCalculator(uid));
+      await dispatch(fetchAdders(uid));
+      await dispatch(fetchFormulas());
+      await dispatch(fetchBattery());
+      await dispatch(fetchCash());
+      await dispatch(fetchFee());
+      await dispatch(fetchModule());
+      await dispatch(fetchSelfGen());
+    }else{
+      await dispatch(fetchCalculator(uid));
+      await dispatch(fetchAdders(uid));
+      await dispatch(fetchFormulas());
+      await dispatch(fetchBattery());
+      await dispatch(fetchCash());
+      await dispatch(fetchFee());
+      await dispatch(fetchModule());
+      await dispatch(fetchSelfGen());
+      await dispatch(fetchGuide());
+      await dispatch(fetchUsers());
+    }
+    if(selfgen.info){
+      await dispatch(authenticate(true));
+      props.history.push('/app/calculator')
+    }
+  }
+  useEffect(() => {
+    if(auth.info){
+      getData(auth.info.profile.role)
+    }
+  }, [auth.info,selfgen.info,dispatch,fetchCalculator,fetchAdders,fetchFormulas,fetchBattery,fetchCash,fetchFee,fetchModule,fetchSelfGen,fetchGuide,fetchUsers,authenticate])
   const login = () => {
-    var provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider).then(result => {
-      if(!!result)
-      {
-        const email = firebase.auth().currentUser.email;
-        const displayName = firebase.auth().currentUser.displayName;
-        const photoURL = firebase.auth().currentUser.photoURL;
-
-        firebase.firestore().collection("users").where("email","==",email).get().then((query) => {
-          var docs = query.docs;
-          if(docs.length > 0){
-            // console.log("true")
-            // console.log(docs[0].data())
-            var secret = 'secretstar';
-            var role = {role:docs[0].data().role,allow: docs[0].data().allow}
-            var token = jwt.encode(role, secret);
-            localStorage.setItem('name', displayName);
-            localStorage.setItem('email', email);
-            localStorage.setItem('photoURL', photoURL);
-            localStorage.setItem('token', token);
-            userDispatch({ type: 'LOGIN_SUCCESS' })
-            if(docs[0].data().role === "admin")
-              props.history.push('/app/dashboard')
-            else props.history.push('/app/calculator')
-          }else{
-            const role = "seller";
-            var date = new Date();
-            // const userData = {name: displayName, email: email,role:role,allow:false,club:"Pending"};
-            let userData = {name: displayName, email: email,role:role,allow:false,club:"Pending",evaluationDate: date.toLocaleDateString(),lastQtrlySales:"",nextEvaluationDate:date.toLocaleDateString(),other:"",systemNumber:"",teamName:"Pending",photoURL:photoURL};
-            if(email === "rsefrioui40@gmail.com") {userData.role = "admin";userData.club = "Silver";userData.teamName = "Arizona";userData.systemNumber = "TX";userData.allow = true;}
-            firebase.firestore().collection("users").add(userData).then((result) => {
-                localStorage.setItem('email', email);
-                localStorage.setItem('name', displayName);
-                var secret = 'secretstar';
-                var role = {role:"seller",allow:false}
-                var token = jwt.encode(role, secret);
-                localStorage.setItem('token', token);
-                localStorage.setItem('photoURL', photoURL);
-                data.calc.email = email;
-                data.calc.C3 = "";
-                data.calc.C4 = "";
-                data.calc.allow = false;
-                let obj = {};
-                obj.email = email;
-                obj.data = data.adder;
-                firebase.firestore().collection("adders").add(obj).then((result) => {
-                  firebase.firestore().collection("calculators").add(data.calc).then((result) =>{
-                    userDispatch({ type: 'LOGIN_SUCCESS' })
-                    props.history.push('/app/adders')
-                    }
-                  )
-                })
-            })
-          }
-          // query1.forEach((doc1) => {
-          //     // calcData = doc1.data();
-          //     console.log("qwewq",doc1.data())
-          // })
-        })
-      }
-  });
+    dispatch(signIn());
   }
   return (
-    <Grid container className={classes.container} >
-      {/* <div className={classes.logotypeContainer} style={{background:`url("https://www.kindpng.com/picc/m/459-4597522_banking-and-finance-hd-png-download.png")`,
-        backgroundRepeat: `no-repeat`,
-        backgroundSize: `cover`,
-        backgroundPosition: `center`,backgroundSize: `100% 100%`}}> */}
-      <div className={classes.logotypeContainer} >
-        <img src={logo} alt="logo" className={classes.logotypeImage} />
-        <Typography className={classes.logotypeText}>RMS Commission</Typography>
-        <Button
-            onClick={login
-            }
-            variant="contained"
-            color="secondary"
-            size="large"
-          >
-            Login
-      </Button>
-      </div>
-    </Grid>
+    <>
+    {
+      // auth.refinfo && !authenticated.status ?
+      localStorage.getItem("Id") ?
+      <CircularLoading />
+      :
+      <Grid container className={classes.container} >
+        {/* <div className={classes.logotypeContainer} style={{background:`url("https://www.kindpng.com/picc/m/459-4597522_banking-and-finance-hd-png-download.png")`,
+          backgroundRepeat: `no-repeat`,
+          backgroundSize: `cover`,
+          backgroundPosition: `center`,backgroundSize: `100% 100%`}}> */}
+        <div className={classes.logotypeContainer} >
+          <img src={logo} alt="logo" className={classes.logotypeImage} />
+          <Typography className={classes.logotypeText}>RMS Commission</Typography>
+          <Button
+              onClick={login
+              }
+              variant="contained"
+              color="secondary"
+              size="large"
+            >
+              Login
+        </Button>
+        </div>
+      </Grid>
+    }
+    </>
+    
   );
 }
 

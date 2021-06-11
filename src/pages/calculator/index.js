@@ -1,4 +1,4 @@
-import React ,{useContext,useEffect} from "react";
+import React, { useContext,useEffect } from "react";
 // import { Form, Field } from 'react-final-form';
 import {
   Select,
@@ -12,11 +12,9 @@ import { makeStyles } from "@material-ui/styles";
 import PropTypes from 'prop-types';
 import NumberFormat from 'react-number-format';
 import Fab from '@material-ui/core/Fab';
-import NavigationIcon from '@material-ui/icons/Navigation';
 import $ from "jquery";
 // components
 import Widget from "../../components/Widget/Widget";
-import { FirebaseContext } from '../../components/Firebase/context';
 
 import Notification from "../../components/Notification";
 import { ToastContainer, toast } from "react-toastify";
@@ -25,19 +23,43 @@ import { Close as CloseIcon } from "@material-ui/icons";
   import "react-toastify/dist/ReactToastify.css";
   import useToastStyles from "./styles";
 
+  import { useSelector, useDispatch } from "react-redux";
+  import { FirebaseContext } from '../../redux';
+  import { core } from "../core";
+
 const useStyles = makeStyles(theme => ({
   tableOverflow: {
     overflow: 'auto'
   }
-}))
-let cnt = 0;
+}));
+var cnt = 0;
+var timeid;
+var CC3,CC4,CC5,CC6,CC7,CC8,CC9,CC10,
+    CC11,CC12,CC13,CC14,CC15,CC16,CC17,
+    CC18,CC19,CC20,CC21
+    ,FF14,FF15,FF17,FF18,FF19,FF20,FFSelfGen;
 export default function Calculator() {
+  const { api } = useContext(FirebaseContext);
+  const {
+    updateCalculator,
+    updateAdders
+  } = api;
+  const auth = useSelector(state => state.auth);
+  const calculator = useSelector(state => state.calculator);
+  const adders = useSelector(state => state.adders);
+  const formulas = useSelector(state => state.formulas);
+  const cash = useSelector(state => state.cash);
+  const selfgen = useSelector(state => state.selfgen);
+  const battery = useSelector(state => state.battery);
+  const fee = useSelector(state => state.fee);
+  const modules = useSelector(state => state.modules);
+  const dispatch = useDispatch();
+
   var toastClasses = useToastStyles();
   const { containerProps, indicatorEl } = useLoading({
     loading: true,
     indicator: <ThreeDots width="50" />,
   });
-  const firebase = useContext(FirebaseContext);
   const classes = useStyles();
   const [loading, setLoading] = React.useState(true);
   const [C3, setC3] = React.useState('');
@@ -67,8 +89,8 @@ export default function Calculator() {
   const [F20, setF20] = React.useState('');
   const [FSelfGen, setFSelfGen] = React.useState('');
   const [dealerFee, setDealerFee] = React.useState([]);
-  const [cash, setCash] = React.useState([]);
-  const [battery, setBattery] = React.useState([]);
+  const [ccash, setCash] = React.useState([]);
+  const [bbattery, setBattery] = React.useState([]);
   const [mmodule, setModule] = React.useState([]);
   const [selfgen_lead, setSelfgenLead] = React.useState([]);
 
@@ -84,8 +106,6 @@ export default function Calculator() {
     }
     const handleNotificationCall = () => {
         var componentProps;
-    
-
             componentProps = {
               type: "feedback",
               message: `You do not have permission to use it yet.
@@ -107,30 +127,43 @@ export default function Calculator() {
           
     //#####################################toast########################################################
 
-  const handleChange = (event) => {
+   const handleChange = async function(event){
     switch(event.target.name){
       case "C7":
         setC7(event.target.value);
+        CC7 = event.target.value;
       break;
       case "C8":
         setC8(event.target.value);
+        CC8 = event.target.value;
       break;
       case "C9":
         setC9(event.target.value);
+        CC9 = event.target.value;
       break;
       case "C12":
         setC12(event.target.value);
+        if(event.target.value.indexOf('$') > -1){
+          CC12 = event.target.value.split('$')[1];
+        }else{
+          CC12 = event.target.value;
+        }
       break;
       case "C14":
         setC14(event.target.value);
+        CC14 = event.target.value;
       break;
       case "C10":
         setC10(event.target.value);
+        CC10 = event.target.value;
+        calcAdders(CC10);
       break;
       case "C11":
         setC11(event.target.value);
+        CC11 = event.target.value;
       break;
     }
+    calc();
   };
   const getNum = (str) => {
     if(typeof str === "string"){
@@ -151,118 +184,116 @@ export default function Calculator() {
         return str;
     }
   }
-  const cutDecimal = (data,limit,to) => {
-      let numstr;
-      let splitArray;
-      let result;
-      if(isNaN(data)){
-          return null
-      }else
-      {
-          if(typeof data === "string"){
-              numstr = data;
-          }else if(typeof data === "number"){
-              numstr = data.toString();
-          }else{
-              return data;
+  const calcAdders = (sysSize) => {
+    let addersData =  adders.info;
+    let systemSize = getNum(sysSize);
+    var sum = 0;
+        for(var i = 0;i < 21;i++)
+        {
+          addersData[i].sales_cash_price = parseFloat(addersData[i].sales_cash_price);
+          switch(addersData[i].scale){
+            case "per watt add-on":
+                if(addersData[i].quantity === "Yes") addersData[i].total =addersData[i].sales_cash_price * systemSize;
+                else addersData[i].total = 0;
+              break;
+            case "Added price":
+                if(addersData[i].quantity === "Yes") addersData[i].total =addersData[i].sales_cash_price;
+                else addersData[i].total = 0;
+              break;
+            case "per foot":
+                addersData[i].total = addersData[i].sales_cash_price * addersData[i].quantity;
+              break;
+            default:
+              addersData[i].total = addersData[i].sales_cash_price * addersData[i].quantity;
+              break;
           }
-          if(numstr.indexOf(".") > -1){
-              splitArray = numstr.split('.');
-              if(splitArray[1].length > limit){
-                  result = Math.round(parseFloat(numstr)*Math.pow(10,limit))/Math.pow(10,limit);
-                  return to === "Number" ? result: result.toString();
-              }else{
-                  return to === "Number" ? parseFloat(numstr): numstr 
-              }
-          }else{
-              return to === "Number" ? parseFloat(numstr):numstr;
-          }
-      }
+          sum += addersData[i].total;
+        }
+        addersData[22].total = sum;
+        CC18 = sum;
+        setC18(sum);
+        let uid = auth.refinfo.uid;
+        dispatch(updateAdders(uid,addersData));
   }
-
   React.useEffect(() => {
-    firebase.firestore().collection("users").where("email","==",localStorage.getItem("email")).get().then((query) => {
-        query.forEach((doc) => {
-          if(doc.data().allow)
-          {
-            // console.log("123",doc.data())
-            firebase.firestore().collection("calculators").where("email","==",localStorage.getItem("email")).get().then((query) => {
-              query.forEach((doc) => {
-                firebase.firestore().collection("fee").get().then((query) => {
-                  query.forEach((docfee) => {
-                    const feedata = docfee.data().data;
-                    feedata.sort(function(a, b){return a.Fee - b.Fee});
-                    setDealerFee(feedata);
-                    firebase.firestore().collection("selfgen").get().then((query) => {
-                      query.forEach((docselfgen) => {
-                        const selfgendata = docselfgen.data().data;
-                        selfgendata.sort(function(a, b){return a.ID - b.ID});
-                        setSelfgenLead(selfgendata);
+    if(auth.info.profile.allow){
+      // style();
+      let calcData = calculator.info;
+      
+      let feeData = fee.info;
+      feeData.sort(function(a, b){return a.Fee - b.Fee});
+      setDealerFee(feeData);
+     
+      let cashData = cash.info;
+      cashData.sort(function(a, b){return a.cash - b.cash});
+      setCash(cashData);
+      
+      let batteryData = battery.info;
+      batteryData.sort(function(a, b){return a.ID - b.ID});
+      setBattery(batteryData);
+     
+      let modulesData = modules.info;
+      modulesData.sort(function(a, b){return a.ID - b.ID});
+      setModule(modulesData);
+      
+      let selfgenData = selfgen.info;
+      selfgenData.sort(function(a, b){return a.ID - b.ID});
+      setSelfgenLead(selfgenData);
 
-                        firebase.firestore().collection("module").get().then((query) => {
-                          query.forEach((docmodule) => {
-                            const moduledata = docmodule.data().data;
-                            moduledata.sort(function(a, b){return a.ID - b.ID});
-                            setModule(moduledata);
-                            
-                            firebase.firestore().collection("battery").get().then((query) => {
-                              query.forEach((docbattery) => {
-                                const batterydata = docbattery.data().data;
-                                batterydata.sort(function(a, b){return a.ID - b.ID});
-                                setBattery(batterydata);
-                                
-                                firebase.firestore().collection("cash").get().then((query) => {
-                                  query.forEach((doccash) => {
-                                    const cashData = doccash.data().data;
-                                    cashData.sort(function(a, b){return a.cash - b.cash});
-                                    setCash(cashData);
-            
-                                    setC3(doc.data().C3);
-                                    setC4(doc.data().C4);
-                                    setC5(doc.data().C5);
-                                    setC6(doc.data().C6);
-                                    setC7(doc.data().C7);
-                                    setC8(doc.data().C8);
-                                    setC9(doc.data().C9);
-                                    setC10(doc.data().C10);
-                                    setC11(doc.data().C11);
-                                    setC12("$" + doc.data().C12);
-                                    setC13(doc.data().C13);
-                                    setC14(doc.data().C14);
-                                    setC15(doc.data().C15);
-                                    setC16(doc.data().C16);
-                                    setC17(doc.data().C17);
-                                    // console.log("dbC18",doc.data().C18,doc.data())
-                                    if(doc.data().C18 === "") setC18("0");
-                                    else setC18(doc.data().C18);
-                                    // setC18(doc.data().C18);
-                                    setC19(doc.data().C19);
-                                    setC20(doc.data().C20);
-                                    setC21(doc.data().C21);
-                                    setF14(doc.data().F14);
-                                    setF15(doc.data().F15);
-                                    setF17(doc.data().F17);
-                                    setF18(doc.data().F18);
-                                    setF19(doc.data().F19);
-                                    setF20(doc.data().F20);
-                                    setFSelfGen(doc.data().FSelfGen);
-                                  })
-                                })
-                              })
-                            })
-                          })
-                        })
-                      })
-                    })
-                  })
-                })
-              })
-            })
-          }else{
-          }
-        })
-      })
-  }, [])
+      var formulasData = formulas.info;
+      var data = core(formulasData,calcData);
+
+      calcData = data.calculator;
+
+      setC3(calcData.C3);CC3 = calcData.C3;
+      setC4(calcData.C4);CC4 = calcData.C4;
+      setC5(calcData.C5);CC5 = calcData.C5;
+      setC6(calcData.C6);CC6 = calcData.C6;
+      setC7(calcData.C7);CC7 = calcData.C7;
+      setC8(calcData.C8);CC8 = calcData.C8;
+      setC9(calcData.C9);CC9 = calcData.C9;
+      setC10(calcData.C10);CC10 = calcData.C10;
+      setC11(calcData.C11);CC11 = calcData.C11;
+      setC12("$" + calcData.C12);CC12 = calcData.C12;
+      setC13(calcData.C13);CC13 = calcData.C13;
+      setC14(calcData.C14);CC14 = calcData.C14;
+      setC15(calcData.C15);CC15 = calcData.C15;
+      setC16(calcData.C16);CC16 = calcData.C16;
+      setC17(calcData.C17);CC17 = calcData.C17;
+      setC18(calcData.C18);CC18 = calcData.C18;
+      setC19(calcData.C19);CC19 = calcData.C19;
+      setC20(calcData.C20);CC20 = calcData.C20;
+      setC21(calcData.C21);CC21 = calcData.C21;
+      setF20(calcData.F20);FF20 = calcData.F20;
+      setF19(calcData.F19);FF19 = calcData.F19;
+      setF18(calcData.F18);FF18 = calcData.F18;
+      setF17(calcData.F17);FF17 = calcData.F17;
+      setF15(calcData.F15);FF15 = calcData.F15;
+      setF14(calcData.F14);FF14 = calcData.F14;
+      setFSelfGen(calcData.FSelfGen);FFSelfGen = calcData.FSelfGen;
+      // console.log("useeffect")
+      
+      setLoading(false);
+      timeid = setTimeout(() => {
+        style()
+      }, 10);
+    }else{
+      setLoading(true);
+      if(cnt === 0){
+        handleNotificationCall();
+        cnt++;
+      }
+    }
+  }, [
+    auth.info.profile,
+    calculator.info,
+    adders.info,
+    formulas.info,
+    cash.info,
+    selfgen.info,
+    battery.info,
+    fee.info,
+    modules.info])
 const style = () => {
   //------------------------------------------------------------jquery style--------------------------------------------------
   $("#C3").css({"color":"black"});
@@ -304,338 +335,83 @@ const style = () => {
   $("#F19").css({"text-align":"center"});
   $("#F20").css({"color":"black"});
   $("#F20").css({"text-align":"center"});
+  // console.log("timeid",timeid)
+  clearTimeout(timeid)
   //------------------------------------------------------------style end------------------------------------------------------
 }
-useEffect(() => { 
-  // console.log(C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,"C14",C14,C15,C16,C17,C18,C19,C20,C21,F14,F15,F17,F18,F19,F20)
-  style();
-  // console.log("useeffect")
-  var CC3,CC4,CC5,CC6,CC7,CC8,CC9,CC10,CC11,CC12,CC13,CC14,CC15,CC16,CC17,CC18,CC19,CC20,CC21;
-  CC3 = C3;
-  CC4 = C4;
-  CC5 = C5;
-  CC6 = C6;
-  CC7 = C7;
-  CC8 = C8;
-  CC9 = C9;
-  CC10 = parseFloat(getNum(C10));
-  CC11 = parseFloat(getNum(C11));
-  CC12 = parseFloat(C12.split("$")[1]);
-  // console.log(CC12)
-  CC13 = CC11-CC12;
-  setC13(CC13);
-  //C15=C13-(C13*C14)
-  CC14 = C14;
-  var percent = CC14.split("%")[0]/100;
-  CC15 = (CC11-CC12) - (CC11-CC12)*percent;
-  setC15(CC15)
-  //C16=0.11*C10
-  CC16 = CC10*0.11;
-  setC16(CC16);
-  //C17=If($C$9="Enphase 3kw",+#REF!,IF($C$9="Enphase 10kw",+#REF!,IF($C$9="Panasonic 11kw",+#REF!,IF(C9="Panasonic 17kw",+#REF!,0 ))))
-  if(C9 === "Enphase 3kw") { CC17 = "#REF" }
-  else{
-    if(C9 === "Enphase 10kw") { CC17 = "#REF" }
-    else{
-      if(C9 === "Panasonic 11kw") { CC17 = "#REF" }
-      else{
-        if(C9 === "Panasonic 17kw") { CC17 = "#REF" }
-        else { CC17 = "0" }
-      }
-    }
-  }
-  setC17(CC17);
-  //C18
-  CC18 = C18;
-  // console.log("C18",C18,C10)
-  if(CC18 === "") CC18 = "0";
-  // setC18("0");
-  //C19=C15-C16-C17-C18
-  CC19 = Math.round((CC15-CC16-CC17-CC18)*100)/100
-  setC19(CC19);
-  //C20=C19/C10
-  CC20 = Math.round(CC19/parseFloat(getNum(CC10))*100)/100
-  setC20(CC20);
-  //F  calcul...............................................
-  var formulasRef = firebase.database().ref('MINIFORMULAS');
-  formulasRef.on('value', (snapshot) => {
-  const fData = snapshot.val();
-    
-    var fC4,fC5;
-    fC4 = parseFloat(getNum(fData.B4)) / parseFloat(getNum(fData.A4)) * 100;
-    fC4 = cutDecimal(fC4,2,"Number");
-    fC5 = parseFloat(getNum(fData.B5)) / parseFloat(getNum(fData.A5)) * 100;
-    fC5 = cutDecimal(fC5,2,"Number");
-    //E4=(D4+B4)/((A4/0.8))
-    var fE4,fE5;
-    fE4 = (parseFloat(getNum(fData.D4)) + parseFloat(getNum(fData.B4)))/(parseFloat(getNum(fData.A4))/0.8) *100;
-    fE4 = cutDecimal(fE4,2,"Number");
-    //E5=(D5+B5)/((A5/0.8))
-    fE5 = (parseFloat(getNum(fData.D5)) + parseFloat(getNum(fData.B5)))/(parseFloat(getNum(fData.A5))/0.8) *100;
-    fE5 = cutDecimal(fE5,2,"Number");
-    //H4,H5
-    var fH4,fH5
-    fH4 = CC10;
-    fH4 = cutDecimal(fH4,2,"Number");
-    fH5 = CC10;
-    fH5 = cutDecimal(fH5,2,"Number");
-    //I4,I5 I4 = A4;I5 = A5;
-    var fI4,fI5;
-    fI4 = parseFloat(getNum(fData.A4));
-    fI4 = cutDecimal(fI4,2,"Number");
-    fI5 = parseFloat(getNum(fData.A5));
-    fI5 = cutDecimal(fI5,2,"Number");
-    //I6,I7 I6=I4/(1-CALCULATOR!$C$14) I7=I5/(1-CALCULATOR!$C$14)
-    var fI6,fI7;
-    fI6 = fI4 / (1 - percent);
-    fI6 = cutDecimal(fI6,2,"Number");
-    fI7 = fI5 / (1 - percent);
-    fI7 = cutDecimal(fI7,2,"Number");
-    
-    //K4=if(CALCULATOR!$C$8="Mission 345",CALCULATOR!C11,0)
-    var fK4,fK5;
-    if(C8 === "Mission 345") fK4 = CC11;
-    else fK4 = 0;
-    fK4 = cutDecimal(fK4,2,"Number");
-    //K5=if(CALCULATOR!$C$8="REC 370",CALCULATOR!$C$11,0)
-    if(C8 === "REC 370") fK5 = CC11;
-    else fK5 = 0;
-    fK5 = cutDecimal(fK5,2,"Number");
-    
-    //L4=if(CALCULATOR!$C$8="Mission 345",CALCULATOR!$C$15,0)
-    var fL4,fL5;
-    
-    if(C8 === "Mission 345") fL4 = CC15;
-    else fL4 = 0;
-    fL4 = cutDecimal(fL4,2,"Number");
-    //L5=if(CALCULATOR!$C$8="REC 370",CALCULATOR!$C$15,0)
-    if(C8 === "REC 370") fL5 = CC15;
-    else fL5 = 0;
-    fL5 = cutDecimal(fL5,2,"Number");
-    
-    //M4=if(CALCULATOR!$C$8="Mission 345",-CALCULATOR!$C$16,0)
-    var fM4,fM5;
-    if(C8 === "Mission 345") fM4 = -CC16;
-    else fM4 = 0;
-    fM4 = cutDecimal(fM4,2,"Number");
-    //M5=if(CALCULATOR!$C$8="REC 370",-CALCULATOR!$C$16,0)
-    if(C8 === "REC 370") fM5 = -CC16;
-    else fM5 = 0;
-    fM5 = cutDecimal(fM5,2,"Number");
-    
-    //N4=if(CALCULATOR!$C$8="Mission 345",-CALCULATOR!$C$17,0)
-    var fN4,fN5;
-    if(C8 === "Mission 345") fN4 = -CC17;
-    else fN4 = 0;
-    fN4 = cutDecimal(fN4,2,"Number");
-    //N5=if(CALCULATOR!$C$8="REC 370",-CALCULATOR!$C$17,0)
-    if(C8 === "REC 370") fN5 = -CC17;
-    else fN5 = 0;
-    fN5 = cutDecimal(fN5,2,"Number");
-    
-    //O4=if(CALCULATOR!$C$8="Mission 345",-CALCULATOR!$C$18,0)
-    var fO4,fO5;
-    if(C8 === "Mission 345") fO4 = -CC18;
-    else fO4 = 0;
-    fO4 = cutDecimal(fO4,2,"Number");
-    //O5=if(CALCULATOR!$C$8="REC 370",-CALCULATOR!$C$18,0)
-    if(C8 === "REC 370") fO5 = -CC18;
-    else fO5 = 0;
-    fO5 = cutDecimal(fO5,2,"Number");
-    //Q4=sum(L4:O4)
-    var fQ4,fQ5;
-    fQ4 = fL4+fM4+fN4+fO4;
-    fQ4 = cutDecimal(fQ4,2,"Number");
-    //Q5=sum(L5:O5)
-    fQ5 = fL5+fM5+fN5+fO5;
-    fQ5 = cutDecimal(fQ5,2,"Number");
-    //S4=IF(Q4>0,Q4/H4,0)
-    var fS4,fS5;
-    if(fQ4 > 0) fS4 = fQ4/fH4
-    else fS4 = 0;
-    fS4 = cutDecimal(fS4,2,"Number");
-    //S5=IF(Q5>0,Q5/H5,0)
-    if(fQ5 > 0) fS5 = fQ5/fH5
-    else fS5 = 0;
-    fS5 = cutDecimal(fS5,2,"Number");
-    //S8=IF(S4<I4,"REFUSED","ACCEPTED")
-    var fS8,fS9;
-    if(fS4 < fI4) fS8 = "REFUSED";
-    else fS8 = "ACCEPTED";
-    //S9=IF(S5<I5,"REFUSED","ACCEPTED")
-    if(fS5 < fI5) fS9= "REFUSED";
-    else fS9= "ACCEPTED";
-    //T4=IF(S4>I4,S4-I4,0)
-    var fT4,fT5;
-    if(fS4 > fI4) fT4 = (fS4 - fI4);
-    else fT4 = 0;
-    fT4 = cutDecimal(fT4,2,"Number");
-    //T5=IF(S5>0,S5-I5,0)
-    if(fS5 > fI5) fT5 = (fS5 - fI5);
-    else fT5 = 0;
-    fT5 = cutDecimal(fT5,2,"Number");
+const calc = () => {
+   // console.log(C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,"C14",C14,C15,C16,C17,C18,C19,C20,C21,F14,F15,F17,F18,F19,F20)
+   // console.log("useeffect")
+   
+   CC3 = C3;
+   CC4 = C4;
 
-    //U4=IF(T4>=0,IF(CALCULATOR!$C$6="Bronze",T4*$Z$7,IF(CALCULATOR!$C$6="Silver",T4*$Z$8,T4*$Z$9)))
-    var fU4,fU5;
-    if(fT4 >=0){
-        if(C6 === "Bronze") fU4 =(fT4*parseFloat(fData.Z7.split("%")[0])/100);
-        else{
-            if(C6 === "Silver") fU4 =(fT4*parseFloat(fData.Z8.split("%")[0])/100);
-            else fU4 =(fT4*parseFloat(fData.Z9.split("%")[0])/100);
-        }
-    }
-    fU4 = cutDecimal(fU4,2,"Number");
-    //U5=IF(T5>=0,IF(CALCULATOR!$C$6="Bronze",T5*$Z$7,IF(CALCULATOR!$C$6="Silver",T5*$Z$8,T5*$Z$9)))
-    if(fT5 >=0){
-        if(C6 === "Bronze") fU5 =(fT5*parseFloat(fData.Z7.split("%")[0])/100);
-        else{
-            if(C6 === "Silver") fU5 =(fT5*parseFloat(fData.Z8.split("%")[0])/100);
-            else fU5 =(fT5*parseFloat(fData.Z9.split("%")[0])/100);
-        }
-    }
-    fU5 = cutDecimal(fU5,2,"Number");
-    //V4=IF(+S4>=I4,B4*H4,0)
-    var fV4,fV5;
-    if(fS4 >= fI4) fV4 = fData.B4*fH4;
-    else fV4 = 0;
-    fV4 = cutDecimal(fV4,2,"Number");
-    //V5=IF(S5>I5,B5*H5,0)
-    if(fS5 > fI5) fV5 = fData.B5*fH5;
-    else fV5 = 0;
-    fV5 = cutDecimal(fV5,2,"Number");
-    //Y4=IF(CALCULATOR!$C$7="Self",D4*H4,0)
-    var fY4,fY5;
-    if(C7 === "Self") fY4 = fData.D4*fH4;
-    else fY4 = 0;
-    fY4 = cutDecimal(fY4,2,"Number");
-    //Y5=IF(CALCULATOR!$C$7="Self",D5*H5,0)
-    if(C7 === "Self") fY5 = fData.D5*fH5;
-    else fY5 = 0;
-    fY5 = cutDecimal(fY5,2,"Number");
-    //Z4=U4*H4
-    var fZ4,fZ5;
-    fZ4 = fU4*fH4;
-    fZ4 = cutDecimal(fZ4,2,"Number");
-    //Z5=U5*H5
-    fZ5 = fU5*fH5;
-    fZ5 = cutDecimal(fZ5,2,"Number");
-    //AA4=sum(V4:Z4)
-    var fAA4,fAA5;
-    fAA4 = fV4+fY4+fZ4;
-    fAA4 = cutDecimal(fAA4,2,"Number");
-    //AA5=sum(V5:Z5)
-    fAA5 = fV5+fY5+fZ5;
-    fAA5 = cutDecimal(fAA5,2,"Number");
-    // console.log("fAA5",fAA5)
-
-    let str_F14,str_F15,str_F17,str_F18,str_F19,str_FSelfGen,str_F20;
-    if(C8 === "Mission 345") CC21 = fS8;
-    else CC21 = fS9;
-    setC21(CC21);
-    //F14=IF(C8="Mission 345",Formulas!$T$4,Formulas!$T$5)
-    if(C8 === "Mission 345") str_F14 = (Math.round(fT4*100)/100).toString();
-    else str_F14 = (Math.round(fT5*100)/100).toString();
-    setF14(str_F14);
-    //F15=IF(C8="Mission 345",Formulas!$U$4,Formulas!$U$5)
-    if(C8 === "Mission 345") str_F15 = (Math.round(fU4*100)/100).toString();
-    else str_F15 = (Math.round(fU5*100)/100).toString();
-    setF15(str_F15);
-    //F17=IF($C$8="Mission 345",Formulas!$V$4,Formulas!$V$5)
-    
-    if(C8 === "Mission 345") str_F17 = (Math.round((fV4)*100)/100).toString();
-    else str_F17 = (Math.round((fV5)*100)/100).toString();
-    setF17(str_F17);
-    //FSelfGen=IF($C$8="Mission 345",Formulas!$V$4+Formulas!$Y$4,Formulas!$V$5+Formulas!$Y$5)
-    
-    if(C8 === "Mission 345") str_FSelfGen = (Math.round((fY4)*100)/100).toString();
-    else str_FSelfGen = (Math.round((fY5)*100)/100).toString();
-    setFSelfGen(str_FSelfGen);
-    //F18=IF($C$8="Mission 345",Formulas!$Z$4,Formulas!$Z$5)
-    
-    if(C8 === "Mission 345") str_F18 = (Math.round(fZ4*100)/100).toString();
-    else str_F18 = (Math.round(fZ5*100)/100).toString();
-    setF18(str_F18)
-    //F19=IF($C$9="None",0,500)
-    
-    if(C9 === "None") str_F19 = "0";
-    else str_F19 = "500";
-    setF19(str_F19)
-    
-    //F20=sum(F17:F19)
-    str_F20 = (Math.round((parseFloat(getNum(str_F17))+parseFloat(getNum(str_FSelfGen))+parseFloat(getNum(str_F18))+parseFloat(getNum(str_F19)))*100)/100).toString();
-    setF20(str_F20);
-    // console.log((Math.round((parseFloat(getNum(str_F17))+parseFloat(getNum(str_selfGen))+parseFloat(getNum(str_F18))+parseFloat(getNum(str_F19)))*100)/100).toString())
-    //-------------------------------------------------database update------------------------------------------------------------
-    var updateData = {};
-    updateData.C3 = CC3.toString();
-    updateData.C4 = CC4.toString();
-    updateData.C5 = CC5.toString();
-    updateData.C6 = CC6.toString();
-    updateData.C7 = CC7.toString();
-    updateData.C8 = CC8.toString();
-    updateData.C9 = CC9.toString();
-    updateData.C10 = CC10.toString();
-    updateData.C11 = CC11.toString();
-    updateData.C12 = CC12.toString();
-    updateData.C13 = CC13.toString();
-    updateData.C14 = CC14.toString();
-    updateData.C15 = CC15.toString();
-    updateData.C16 = CC16.toString();
-    updateData.C17 = CC17.toString();
-    updateData.C18 = CC18.toString();
-    updateData.C19 = CC19.toString();
-    updateData.C20 = CC20.toString();
-    updateData.C21 = CC21.toString();
-    updateData.F14 = str_F14.toString();
-    updateData.F15 = str_F15.toString();
-    updateData.F17 = str_F17.toString();
-    updateData.F18 = str_F18.toString();
-    updateData.F19 = str_F19.toString();
-    updateData.F20 = str_F20.toString();
-    updateData.FSelfGen = str_FSelfGen.toString();
-    // console.log(updateData)
-    firebase.firestore().collection("calculators").where("email","==",localStorage.getItem("email"))
-      .get()
-      .then((querySnapshot) => {
-          var docs = querySnapshot.docs;
-          if(docs.length > 0) //update documentation
-          {
-            if(updateData.C3 === "" && updateData.C4 === "" && updateData.C7 === "" && updateData.C8 === "" && updateData.C9 === ""){
-              console.log("first calculaors")
-              if(docs[0].data().allow){
-                // setLoading(false);
-                style();
-              }else{
-                handleNotificationCall()
-              }
-              
-            }else{
-              console.log("second calculaors")
-              firebase.firestore().collection("calculators").doc(docs[0].id).update(updateData).then(() => {
-                  if(docs[0].data().allow){
-                    setLoading(false);
-                    style();
-                  }else{
-                    cnt++;
-                    if(cnt === 2)
-                    {handleNotificationCall();cnt = 0;}
-                  }
-              })
-            }
-          }
-      })
-  })
-
-
-
-  //..........................................................
-  
-    return () => {
-      formulasRef.off("value");
-    };
-
-}, [C3,C4,C7,C8,C9,C10,C11,C12,C14,C18])
-
+   CC10 = parseFloat(getNum(CC10));
+   CC11 = parseFloat(getNum(CC11));
+   CC12 = parseFloat(CC12);
+   // console.log(CC12)
+   CC13 = CC11-CC12;
+   setC13(CC13);
+   //C15=C13-(C13*C14)
+   var percent = CC14.split("%")[0]/100;
+   CC15 = (CC11-CC12) - (CC11-CC12)*percent;
+   setC15(CC15)
+   //C16=0.11*C10
+   CC16 = CC10*0.11;
+   setC16(CC16);
+   //C17=If($C$9="Enphase 3kw",+#REF!,IF($C$9="Enphase 10kw",+#REF!,IF($C$9="Panasonic 11kw",+#REF!,IF(C9="Panasonic 17kw",+#REF!,0 ))))
+   if(CC9 === "Enphase 3kw") { CC17 = "#REF" }
+   else{
+     if(CC9 === "Enphase 10kw") { CC17 = "#REF" }
+     else{
+       if(CC9 === "Panasonic 11kw") { CC17 = "#REF" }
+       else{
+         if(CC9 === "Panasonic 17kw") { CC17 = "#REF" }
+         else { CC17 = "0" }
+       }
+     }
+   }
+   setC17(CC17);
+   //C18
+   // console.log("C18",C18,C10)
+   if(CC18 === "") CC18 = "0";
+   // setC18("0");
+   //C19=C15-C16-C17-C18
+   console.log("CC18",CC18)
+   CC19 = Math.round((CC15-CC16-CC17-CC18)*100)/100
+   setC19(CC19);
+   //C20=C19/C10
+   CC20 = Math.round(CC19/parseFloat(getNum(CC10))*100)/100
+   setC20(CC20);
+ 
+   var calcObj = {
+    C3:CC3 || "",
+    C4:CC4 || "",
+    C5:CC5 || "",
+    C6:CC6 || "",
+    C7:CC7 || "",
+    C8:CC8 || "",
+    C9:CC9 || "",
+    C10:CC10 || 0,
+    C11:CC11 || 0,
+    C12:CC12 || 0,
+    C13:CC13 || 0,
+    C14:CC14 || 0,
+    C15:CC15 || 0,
+    C16:CC16 || 0,
+    C17:CC17 || 0,
+    C18:CC18 || 0,
+    C19:CC19 || 0,
+    C20:CC20 || 0,
+    C21:CC21 || "",
+   }
+   var formulasData = formulas.info;
+   var data = core(formulasData,calcObj);
+   calcObj = data.calculator;
+   let uid = auth.refinfo.uid;
+   dispatch(updateCalculator(uid,calcObj));
+    // console.log("calc Document successfully update!");
+}
 return(
   <>
   <ToastContainer 
@@ -670,7 +446,7 @@ return(
                     value={C3} 
                     // onBlur={handleBlur}
                     onChange={(event) => {setC3(event.target.value);}}
-                    style={{textAlign: "center",marginTop: 15,backgroundColor:"rgb(229 255 14)",width: "75%"}} />
+                    style={{textAlign: "center",marginTop: 15,backgroundColor:"rgb(229 255 14)",width: "75%",color:"black"}} />
                 </Grid>
                 <Grid item lg={8} md={6} sm={6} xs={12} style={{textAlign: "center"}}>
                     Name of Customer
@@ -766,7 +542,7 @@ return(
                     onChange={handleChange}
                     style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: "75%"}}
                   >
-                    { battery.map( item => {
+                    { bbattery.map( item => {
                       return (<MenuItem key={item.ID} value={item.battery}>{item.battery}</MenuItem>)
                     })}
                     {/* <MenuItem value={"None"}>None</MenuItem>
@@ -819,7 +595,7 @@ return(
                     onChange={handleChange}
                     style={{textAlign: "center",backgroundColor:"rgb(229 255 14)",width: "75%"}}
                   >
-                    { cash.map( item => {
+                    { ccash.map( item => {
                       return (<MenuItem key={item.ID} value={'$' + item.cash}>${item.cash}</MenuItem>)
                     })}
                     {/* <MenuItem value={"$0"}>$0</MenuItem>

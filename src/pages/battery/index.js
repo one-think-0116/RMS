@@ -1,7 +1,6 @@
-import * as React from 'react';
+import React, { useContext,useEffect } from "react";
 import * as ReactDOM from 'react-dom';
 import { Grid, GridColumn as Column, GridToolbar } from '@progress/kendo-react-grid';
-import { FirebaseContext } from '../../components/Firebase/context';
 import { useLoading, ThreeDots} from '@agney/react-loading';
 import Notification from "../../components/Notification/Notification";
 import { ToastContainer, toast } from "react-toastify";
@@ -17,15 +16,26 @@ import { MyCommandCell } from './myCommandCell';
 import useStyles from "./styles";
 import "./style.css"
 
+import { useSelector, useDispatch } from "react-redux";
+import { FirebaseContext } from '../../redux';
+
 let deleteDataItem;
 export default function Battery() {
+    const { api } = useContext(FirebaseContext);
+    const {
+        addBattery,
+        updateBattery,
+        deleteBattery,
+      } = api;
+    const battery = useSelector(state => state.battery);
+    const dispatch = useDispatch();
+
     var classes = useStyles();
     const { containerProps, indicatorEl } = useLoading({
         loading: true,
         indicator: <ThreeDots width="50" />,
       });
     const [loading, setLoading] = React.useState(true);
-    const firebase = React.useContext(FirebaseContext);
     const [editField, setEditField] = React.useState("inEdit");
     const [data, setData] = React.useState([]);
     const [alert,setAlert] = React.useState(null);
@@ -90,7 +100,6 @@ export default function Battery() {
             const {inEdit,...nitem} = item;
             return nitem;
         })
-        let saveData = {data:newSaveData};
         setAlert(
             <SweetAlert
                 title={""}
@@ -99,32 +108,10 @@ export default function Battery() {
             >
                 <CircularProgressWithLabel value={100} />
             </SweetAlert>)
-        if(data.length === 1){
-            firebase.firestore().collection("battery").add(saveData).then(() => {
-                setAlert(null);
-                setData([...data]);
-                handleNotificationCall();
-                console.log("battery Document successfully add!");
-            })
-        }else
-        {
-            firebase.firestore().collection("battery")
-            .get()
-            .then((querySnapshot) => {
-                var docs = querySnapshot.docs;
-                if(docs.length > 0) //update documentation
-                {
-                    firebase.firestore().collection("battery").doc(docs[0].id).update(saveData).then(() => {
-                        setAlert(null);
-                        data.sort(function(a, b){return a.ID - b.ID});
-                        setData([...data]);
-                        handleNotificationCall();
-                        console.log("battery Document successfully update!");
-                    })
-                }
-            })
-            
-        }
+        dispatch(addBattery(newSaveData));
+        setAlert(null);
+        handleNotificationCall();
+        // console.log("battery Document successfully add!");
     }
 
     const update = (dataItem) => {
@@ -142,8 +129,6 @@ export default function Battery() {
             const {inEdit,...nitem} = item;
             return nitem;
         })
-           
-        let saveData = {data:newSaveData};
         setAlert(
             <SweetAlert
                 title={""}
@@ -152,22 +137,10 @@ export default function Battery() {
             >
                 <CircularProgressWithLabel value={100} />
             </SweetAlert>)
-        firebase.firestore().collection("battery")
-            .get()
-            .then((querySnapshot) => {
-                var docs = querySnapshot.docs;
-                if(docs.length > 0) //update documentation
-                {
-                    firebase.firestore().collection("battery").doc(docs[0].id).update(saveData).then(() => {
-                        setAlert(null);
-                        data.sort(function(a, b){return a.ID - b.ID});
-                        setData([...data]);
-                        handleNotificationCall();
-                        console.log("battery Document successfully update!");
-                    })
-                }
-            })
-        
+        dispatch(updateBattery(newSaveData));
+        setAlert(null);
+        handleNotificationCall();
+        // console.log("battery Document successfully update!");
     }
 
     const cancel = (dataItem) => {
@@ -214,34 +187,10 @@ export default function Battery() {
             nitem.ID = id;
             return nitem;
         })
-        let saveData = {data:newSaveData};
-        firebase.firestore().collection("battery")
-            .get()
-            .then((querySnapshot) => {
-                var docs = querySnapshot.docs;
-                if(docs.length > 0) //update documentation
-                {
-                    setAlert(
-                        <SweetAlert
-                            title={""}
-                            onConfirm={() => {}}
-                            showConfirm={false}
-                        >
-                            <CircularProgressWithLabel value={100} />
-                        </SweetAlert>)
-                    firebase.firestore().collection("battery").doc(docs[0].id).update(saveData).then(() => {
-                        data.sort(function(a, b){return a.ID - b.ID});
-                        setData([...newSaveData]);
-                        // handleNotificationCall();
-                        setAlert(
-                            <SweetAlert success title="Deleted" onConfirm={deletedConfirm}>
-                              The battery type has been deleted.
-                            </SweetAlert>
-                            )
-                        console.log("battery Document successfully delete update!");
-                    })
-                }
-            })
+        dispatch(deleteBattery(newSaveData));
+        setAlert(null);
+        handleNotificationCall();
+        // console.log("battery Document successfully delete update!");
     }
     const deleteCancel = () => {
         setAlert(null);
@@ -269,32 +218,21 @@ export default function Battery() {
     }
 
     const cancelCurrentChanges = () => {
-        firebase.firestore().collection("battery").get().then((query) => {
-            var docs = query.docs;
-            if(docs.length > 0){
-                const dbdata = docs[0].data().data;
-                dbdata.sort(function(a, b){return a.ID - b.ID});
-                setData(dbdata)
-            }else{
-                setData([]);
-            }
-          })
+        if(battery.info){
+            const dbdata = battery.info;
+            dbdata.sort(function(a, b){return a.ID - b.ID});
+            setData(dbdata)
+        }
     }
     const hasEditedItem = data.some(p => p.inEdit);
     React.useEffect(() => {
-        firebase.firestore().collection("battery").get().then((query) => {
-            var docs = query.docs;
-            if(docs.length > 0){
-                const dbdata = docs[0].data().data;
-                dbdata.sort(function(a, b){return a.ID - b.ID});
-                setData(dbdata)
-            }else{
-                setData([]);
-            }
+        if(battery.info){
+            const dbdata = battery.info;
+            dbdata.sort(function(a, b){return a.ID - b.ID});
+            setData(dbdata)
             setLoading(false);
-          })
-        
-      }, [])
+        }
+      }, [battery.info])
     return (
         <>
             <ToastContainer 

@@ -1,7 +1,6 @@
-import * as React from 'react';
+import React, { useContext,useEffect } from "react";
 import * as ReactDOM from 'react-dom';
 import { Grid, GridColumn as Column, GridToolbar } from '@progress/kendo-react-grid';
-import { FirebaseContext } from '../../components/Firebase/context';
 import { useLoading, ThreeDots} from '@agney/react-loading';
 import Notification from "../../components/Notification/Notification";
 import { ToastContainer, toast } from "react-toastify";
@@ -17,8 +16,21 @@ import { MyCommandCell } from './myCommandCell';
 import useStyles from "./styles";
 import "./style.css"
 
+import { useSelector, useDispatch } from "react-redux";
+import { FirebaseContext } from '../../redux';
+
 let deleteDataItem;
 export default function Module() {
+
+    const { api } = useContext(FirebaseContext);
+    const {
+        addModule,
+        updateModule,
+        deleteModule
+      } = api;
+    const modules = useSelector(state => state.modules);
+    const dispatch = useDispatch();
+
     var classes = useStyles();
     const { containerProps, indicatorEl } = useLoading({
         loading: true,
@@ -90,7 +102,6 @@ export default function Module() {
             const {inEdit,...nitem} = item;
             return nitem;
         })
-        let saveData = {data:newSaveData};
         setAlert(
             <SweetAlert
                 title={""}
@@ -99,32 +110,10 @@ export default function Module() {
             >
                 <CircularProgressWithLabel value={100} />
             </SweetAlert>)
-        if(data.length === 1){
-            firebase.firestore().collection("module").add(saveData).then(() => {
-                setAlert(null);
-                setData([...data]);
-                handleNotificationCall();
-                console.log("module Document successfully add!");
-            })
-        }else
-        {
-            firebase.firestore().collection("module")
-            .get()
-            .then((querySnapshot) => {
-                var docs = querySnapshot.docs;
-                if(docs.length > 0) //update documentation
-                {
-                    firebase.firestore().collection("module").doc(docs[0].id).update(saveData).then(() => {
-                        setAlert(null);
-                        data.sort(function(a, b){return a.ID - b.ID});
-                        setData([...data]);
-                        handleNotificationCall();
-                        console.log("module Document successfully update!");
-                    })
-                }
-            })
-            
-        }
+        dispatch(addModule(newSaveData));
+        setAlert(null);
+        handleNotificationCall();
+        // console.log("module Document successfully add!");
     }
 
     const update = (dataItem) => {
@@ -143,7 +132,6 @@ export default function Module() {
             return nitem;
         })
            
-        let saveData = {data:newSaveData};
         setAlert(
             <SweetAlert
                 title={""}
@@ -152,22 +140,10 @@ export default function Module() {
             >
                 <CircularProgressWithLabel value={100} />
             </SweetAlert>)
-        firebase.firestore().collection("module")
-            .get()
-            .then((querySnapshot) => {
-                var docs = querySnapshot.docs;
-                if(docs.length > 0) //update documentation
-                {
-                    firebase.firestore().collection("module").doc(docs[0].id).update(saveData).then(() => {
-                        setAlert(null);
-                        data.sort(function(a, b){return a.ID - b.ID});
-                        setData([...data]);
-                        handleNotificationCall();
-                        console.log("module Document successfully update!");
-                    })
-                }
-            })
-        
+        dispatch(updateModule(newSaveData));
+        setAlert(null);
+        handleNotificationCall();
+        // console.log("module Document successfully update!");
     }
 
     const cancel = (dataItem) => {
@@ -214,34 +190,10 @@ export default function Module() {
             nitem.ID = id;
             return nitem;
         })
-        let saveData = {data:newSaveData};
-        firebase.firestore().collection("module")
-            .get()
-            .then((querySnapshot) => {
-                var docs = querySnapshot.docs;
-                if(docs.length > 0) //update documentation
-                {
-                    setAlert(
-                        <SweetAlert
-                            title={""}
-                            onConfirm={() => {}}
-                            showConfirm={false}
-                        >
-                            <CircularProgressWithLabel value={100} />
-                        </SweetAlert>)
-                    firebase.firestore().collection("module").doc(docs[0].id).update(saveData).then(() => {
-                        data.sort(function(a, b){return a.ID - b.ID});
-                        setData([...newSaveData]);
-                        // handleNotificationCall();
-                        setAlert(
-                            <SweetAlert success title="Deleted" onConfirm={deletedConfirm}>
-                              The module has been deleted.
-                            </SweetAlert>
-                            )
-                        console.log("module Document successfully delete update!");
-                    })
-                }
-            })
+        dispatch(deleteModule(newSaveData));
+        setAlert(null);
+        handleNotificationCall();
+        // console.log("module Document successfully delete update!");
     }
     const deleteCancel = () => {
         setAlert(null);
@@ -269,32 +221,21 @@ export default function Module() {
     }
 
     const cancelCurrentChanges = () => {
-        firebase.firestore().collection("module").get().then((query) => {
-            var docs = query.docs;
-            if(docs.length > 0){
-                const dbdata = docs[0].data().data;
-                dbdata.sort(function(a, b){return a.ID - b.ID});
-                setData(dbdata)
-            }else{
-                setData([]);
-            }
-          })
+        if(modules.info){
+            const dbdata = modules.info;
+            dbdata.sort(function(a, b){return a.ID - b.ID});
+            setData(dbdata)
+        }
     }
     const hasEditedItem = data.some(p => p.inEdit);
     React.useEffect(() => {
-        firebase.firestore().collection("module").get().then((query) => {
-            var docs = query.docs;
-            if(docs.length > 0){
-                const dbdata = docs[0].data().data;
-                dbdata.sort(function(a, b){return a.ID - b.ID});
-                setData(dbdata)
-            }else{
-                setData([]);
-            }
+        if(modules.info){
+            const dbdata = modules.info;
+            dbdata.sort(function(a, b){return a.ID - b.ID});
+            setData(dbdata)
             setLoading(false);
-          })
-        
-      }, [])
+        }
+      }, [modules.info])
     return (
         <>
             <ToastContainer 

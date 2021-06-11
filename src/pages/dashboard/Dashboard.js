@@ -45,7 +45,7 @@ const PieChartData = [
 export default function Dashboard(props) {
   var classes = useStyles();
   var theme = useTheme();
-
+  // console.log("dashboard")
   // local
   var [mainChartState, setMainChartState] = useState("monthly");
 

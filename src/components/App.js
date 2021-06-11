@@ -7,22 +7,22 @@ import Layout from "./Layout";
 import Error from "../pages/error";
 import Login from "../pages/login";
 // context
-import { useUserState } from "../context/UserContext";
-
+import { useSelector, useDispatch } from "react-redux";
+import { FirebaseContext } from '../redux';
 
 export default function App() {
   // global
-
-
-  var { isAuthenticated } = useUserState();
+  const authenticated = useSelector(state => state.authenticated);
+  const isAuthenticated = authenticated.status;
+  // console.log("app isAuthenticated",authenticated.status)
   return (
     <HashRouter>
       <Switch>
-        <Route exact path="/" render={() => <Redirect to="/app/dashboard" />} />
+        <Route exact path="/" render={() => <Redirect to="/app/calculator" />} />
         <Route
           exact
           path="/app"
-          render={() => <Redirect to="/app/dashboard" />}
+          render={() => <Redirect to="/app/calculator" />}
         />
         <PrivateRoute path="/app" component={Layout} />
         <PublicRoute path="/login" component={Login} />

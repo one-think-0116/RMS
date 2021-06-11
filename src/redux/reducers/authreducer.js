@@ -3,15 +3,20 @@ import {
     FETCH_USER_SUCCESS,
     FETCH_USER_FAILED,
     USER_SIGN_IN,
+    USER_SIGN_IN_SUCCESS,
     USER_SIGN_IN_FAILED,
     USER_SIGN_OUT,
     USER_DELETED,
-    UPDATE_USER_PROFILE
+    UPDATE_USER_PROFILE,
+    USER_CHECK,
+    USER_CHECKED,
 } from "../store/types";
 
 const INITIAL_STATE = {
     info: null,
     loading: false,
+    refinfo:null,
+    check:false,
     error: {
         flag: false,
         msg: null
@@ -49,6 +54,17 @@ export const authreducer = (state = INITIAL_STATE, action) => {
                 ...state,
                 loading: true
             };
+        case USER_SIGN_IN_SUCCESS:
+            return {
+                ...state,
+                info: null,
+                refinfo:action.payload,
+                loading: false,
+                error: {
+                    flag: false,
+                    msg: null
+                },
+            };
         case USER_SIGN_IN_FAILED:
             return {
                 ...state,
@@ -68,6 +84,17 @@ export const authreducer = (state = INITIAL_STATE, action) => {
                 ...state,
                 info: {...state.info, profile:action.payload},
             };
+        case USER_CHECK:
+            return {
+                ...state,
+                check: action.payload
+            };
+        case USER_CHECKED:
+            return {
+                ...state,
+                check: action.payload
+            };
+
         default:
             return state;
     }

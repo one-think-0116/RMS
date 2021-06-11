@@ -12,11 +12,12 @@ import "../users/style.css"
 import UserCard from "./components/userCard";
 import Modal from 'react-awesome-modal';
 import { DatePicker } from '@progress/kendo-react-dateinputs';
-import { FirebaseContext } from '../../components/Firebase/context';
 import { useLoading, ThreeDots} from '@agney/react-loading';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { CircularProgressWithLabel } from "../../components/CircularProgressWithLabel"
 
+import { useSelector, useDispatch } from "react-redux";
+import { FirebaseContext } from '../../redux';
 
 // const finalUsers = [
 //   {
@@ -33,10 +34,20 @@ import { CircularProgressWithLabel } from "../../components/CircularProgressWith
 //     other:""
 //   },
 // ]
-let deletedUserEmail;
+let deletedUserUid;
 let selectedUserEmail;
 const sweetAlertStyle = { display: "block", marginTop: "-100px" }
 export default function Users() {
+
+  const { api } = useContext(FirebaseContext);
+  const {
+    updateUsers,
+    updateCalculatorRefAdder,
+    deleteUsers
+    } = api;
+  const users = useSelector(state => state.users);
+  const dispatch = useDispatch();
+
   const { containerProps, indicatorEl } = useLoading({
     loading: true,
     indicator: <ThreeDots width="50" />,
@@ -58,7 +69,6 @@ export default function Users() {
 
 
   const openModal = () => {
-    // console.log("ss",systemNumber)
    setModal(true);
   }
 
@@ -79,11 +89,9 @@ export default function Users() {
     updateCharacters(items);
   }
   const okModal = (e) => {
-    console.log("s",systemNumber)
 
     const items = Array.from(characters);
     if(updateFlag){
-      // console.log("f",selectedUserEmail)
       characters.map((item) => {
         if(item.email === selectedUserEmail){
           item.teamName = team;
@@ -125,30 +133,10 @@ export default function Users() {
     setModal(false);
   }
   const save = (data) => {
-    const {id,...saveData} = data;
-    firebase.firestore().collection("users").where("email","==",saveData.email)
-    .get()
-    .then((querySnapshot) => {
-        var docs = querySnapshot.docs;
-        if(docs.length > 0) //update documentation
-        {
-            firebase.firestore().collection("users").doc(docs[0].id).update(saveData).then(() => {
-                console.log("users Document successfully update!");
-                firebase.firestore().collection("calculators").where("email","==",saveData.email)
-                .get()
-                .then((querySnapshot) => {
-                    var docs1 = querySnapshot.docs;
-                    if(docs1.length > 0) //update documentation
-                    {
-                      var cData = {C3:saveData.systemNumber,C5:saveData.name,C6:saveData.club,allow:saveData.allow}
-                        firebase.firestore().collection("calculators").doc(docs1[0].id).update(cData).then(() => {
-                            console.log("calculators Document successfully update!");
-                        })
-                    }
-                })
-            })
-        }
-    })
+    const {uid,...saveData} = data;
+    dispatch(updateUsers(uid,saveData));
+    var cData = {C3:saveData.systemNumber,C5:saveData.name,C6:saveData.club,allow:saveData.allow};
+    dispatch(updateCalculatorRefAdder(uid,cData));
   }
   const handleOnDragEnd = (result) => {
     if (!result.destination) return;
@@ -197,7 +185,7 @@ export default function Users() {
     setOther(event.target.value);
   };
   const update = (e) => {
-    console.log("update")
+    // console.log("update")
     setUpdateFlag(true);
     let updateItem = {}; 
     characters.map((item) => {
@@ -218,27 +206,23 @@ export default function Users() {
     openModal();
   }
   useEffect(() => {
-    firebase.firestore().collection("users").get().then((query) => {
-      var data = [];
+    if(users.info){
+      var usersdata = users.info;
       var id = 0;
-      var temp = {};
-      query.forEach((doc) => {
-        // if(doc.data().role != "admin"){
-          temp = {};
-          id++;
-          temp =  doc.data();
-          temp.id = id.toString();
-          data.push(temp);
-        // }
-        
-      })
-      updateCharacters(data)
+      const uData = Object.keys(usersdata).
+                    map((i) => {
+                      id++;
+                      usersdata[i].id = id.toString();
+                      usersdata[i].uid = i;
+                      return usersdata[i]
+                    })
+      updateCharacters(uData)
       setLoading(false);
-    })
-  }, [])
+    }
+  }, [users.info])
   
   const deleteUser = (e) => {
-    deletedUserEmail = e.target.id;
+    deletedUserUid = e.target.id;
     setAlert(
       <SweetAlert
       danger
@@ -264,54 +248,58 @@ export default function Users() {
       >
         <CircularProgressWithLabel value={30} />
       </SweetAlert>)
-    
-    var usersDBRef = firebase.firestore().collection("users");
-    var calculatorsDBRef = firebase.firestore().collection("calculators");
-    var addersDBRef = firebase.firestore().collection("adders");
-    // console.log("email",deletedUserEmail)
-    calculatorsDBRef.where("email" ,"==", deletedUserEmail).get().then((querySnapshot) => {
-      var docs = querySnapshot.docs;
-      calculatorsDBRef.doc(docs[0].id).delete().then((result) => {
-        // setAlert(null)
-        setAlert(
-          <SweetAlert
-            title={""}
-            onConfirm={() => {}}
-            showConfirm={false}
-          >
-            <CircularProgressWithLabel value={60} />
-          </SweetAlert>)
-        addersDBRef.where("email" ,"==", deletedUserEmail).get().then((querySnapshot) => {
-          var docs = querySnapshot.docs;
-          addersDBRef.doc(docs[0].id).delete().then((result) => {
-            // setAlert(null)
-            setAlert(
-              <SweetAlert
-                title={""}
-                onConfirm={() => {}}
-                showConfirm={false}
-              >
-                <CircularProgressWithLabel value={100} />
-              </SweetAlert>)
-            usersDBRef.where("email" ,"==", deletedUserEmail).get().then((querySnapshot) => {
-              var docs = querySnapshot.docs;
-              usersDBRef.doc(docs[0].id).delete().then((result) => {
-                const newCharacters = [];
-                characters.forEach(item => {
-                  if(item.email !== deletedUserEmail) newCharacters.push(item);
-                })
-                updateCharacters(newCharacters);
+      dispatch(deleteUsers(deletedUserUid))
                 setAlert(
                 <SweetAlert success title="Deleted" onConfirm={deletedConfirm}>
                   The user has been deleted.
-                </SweetAlert>
-                )
-              })
-            })
-          })
-        })
-      })
-    })
+                </SweetAlert>)
+    // var usersDBRef = firebase.firestore().collection("users");
+    // var calculatorsDBRef = firebase.firestore().collection("calculators");
+    // var addersDBRef = firebase.firestore().collection("adders");
+    // console.log("email",deletedUserEmail)
+    // calculatorsDBRef.where("email" ,"==", deletedUserEmail).get().then((querySnapshot) => {
+    //   var docs = querySnapshot.docs;
+    //   calculatorsDBRef.doc(docs[0].id).delete().then((result) => {
+    //     // setAlert(null)
+    //     setAlert(
+    //       <SweetAlert
+    //         title={""}
+    //         onConfirm={() => {}}
+    //         showConfirm={false}
+    //       >
+    //         <CircularProgressWithLabel value={60} />
+    //       </SweetAlert>)
+    //     addersDBRef.where("email" ,"==", deletedUserEmail).get().then((querySnapshot) => {
+    //       var docs = querySnapshot.docs;
+    //       addersDBRef.doc(docs[0].id).delete().then((result) => {
+    //         // setAlert(null)
+    //         setAlert(
+    //           <SweetAlert
+    //             title={""}
+    //             onConfirm={() => {}}
+    //             showConfirm={false}
+    //           >
+    //             <CircularProgressWithLabel value={100} />
+    //           </SweetAlert>)
+    //         usersDBRef.where("email" ,"==", deletedUserEmail).get().then((querySnapshot) => {
+    //           var docs = querySnapshot.docs;
+    //           usersDBRef.doc(docs[0].id).delete().then((result) => {
+    //             const newCharacters = [];
+    //             characters.forEach(item => {
+    //               if(item.email !== deletedUserEmail) newCharacters.push(item);
+    //             })
+    //             updateCharacters(newCharacters);
+    //             setAlert(
+    //             <SweetAlert success title="Deleted" onConfirm={deletedConfirm}>
+    //               The user has been deleted.
+    //             </SweetAlert>
+    //             )
+    //           })
+    //         })
+    //       })
+    //     })
+    //   })
+    // })
   }
   const deleteCancel = () => {
     setAlert(null)

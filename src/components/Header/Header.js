@@ -27,14 +27,9 @@ import { Badge, Typography } from "../Wrappers";
 import Notification from "../Notification/Notification";
 import UserAvatar from "../UserAvatar/UserAvatar";
 
-// context
-import {
-  useLayoutState,
-  useLayoutDispatch,
-  toggleSidebar,
-} from "../../context/LayoutContext";
-import { useUserDispatch } from "../../context/UserContext";
-import { FirebaseContext } from '../../components/Firebase/context';
+
+import { useSelector, useDispatch } from "react-redux";
+import { FirebaseContext } from '../../redux';
 
 const messages = [
   {
@@ -90,13 +85,20 @@ const notifications = [
 ];
 
 export default function Header(props) {
+  const { api } = useContext(FirebaseContext);
+  const {
+    signOut,
+    toggleSidebar,
+    authenticate
+  } = api;
+  const dispatch = useDispatch();
+
+  const auth = useSelector(state => state.auth);
+  const authenticated = useSelector(state => state.authenticated);
+  const isAuthenticated = authenticated.status;
+  const layout = useSelector(state => state.layout);
   var classes = useStyles();
 
-  // global
-  var layoutState = useLayoutState();
-  var layoutDispatch = useLayoutDispatch();
-  var userDispatch = useUserDispatch();
-  const firebase = useContext(FirebaseContext);
   // local
   var [mailMenu, setMailMenu] = useState(null);
   var [isMailsUnread, setIsMailsUnread] = useState(true);
@@ -104,12 +106,9 @@ export default function Header(props) {
   var [isNotificationsUnread, setIsNotificationsUnread] = useState(true);
   var [profileMenu, setProfileMenu] = useState(null);
   var [isSearchOpen, setSearchOpen] = useState(false);
-  const signOut = () => {
-      firebase.auth().signOut();
-      localStorage.removeItem("email");
-      localStorage.removeItem("name");
-      localStorage.removeItem("token");
-      userDispatch({ type: "SIGN_OUT_SUCCESS" });
+  const userSignOut = () => {
+      dispatch(signOut())
+      dispatch(authenticate(false))
       props.history.push("/login");
   }
   const addSizeToGoogleProfilePic = (url) => {
@@ -118,19 +117,20 @@ export default function Header(props) {
     }
     return url;
   }
-  
+  // console.log("header isAuthenticated",isAuthenticated)
   return (
+    isAuthenticated?
     <AppBar position="fixed" className={classes.appBar}>
       <Toolbar className={classes.toolbar}>
         <IconButton
           color="inherit"
-          onClick={() => toggleSidebar(layoutDispatch)}
+          onClick={() => dispatch(toggleSidebar())}
           className={classNames(
             classes.headerMenuButtonSandwich,
             classes.headerMenuButtonCollapse,
           )}
         >
-          {layoutState.isSidebarOpened ? (
+          {layout.isSidebarOpened ? (
             <ArrowBackIcon
               classes={{
                 root: classNames(
@@ -154,7 +154,7 @@ export default function Header(props) {
           RMS Commission Management
         </Typography>
         <div className={classes.grow} />
-        <div
+        {/* <div
           className={classNames(classes.search, {
             [classes.searchFocused]: isSearchOpen,
           })}
@@ -174,8 +174,8 @@ export default function Header(props) {
               input: classes.inputInput,
             }}
           />
-        </div>
-        <IconButton
+        </div> */}
+        {/* <IconButton
           color="inherit"
           aria-haspopup="true"
           aria-controls="mail-menu"
@@ -191,8 +191,8 @@ export default function Header(props) {
           >
             <NotificationsIcon classes={{ root: classes.headerIcon }} />
           </Badge>
-        </IconButton>
-        <IconButton
+        </IconButton> */}
+        {/* <IconButton
           color="inherit"
           aria-haspopup="true"
           aria-controls="mail-menu"
@@ -208,12 +208,12 @@ export default function Header(props) {
           >
             <MailIcon classes={{ root: classes.headerIcon }} />
           </Badge>
-        </IconButton>
+        </IconButton> */}
         <IconButton
           aria-haspopup="true"
           color="inherit"
           className={classes.headerMenuButton}
-          style={{background:'url('+addSizeToGoogleProfilePic(localStorage.getItem("photoURL"))+')',width:50,height:50,backgroundSize:"100% 100%"}}
+          style={{background:'url('+addSizeToGoogleProfilePic(auth.info.photoURL)+')',width:50,height:50,backgroundSize:"100% 100%"}}
           aria-controls="mail-menu"
           onClick={e => setProfileMenu(e.currentTarget)}
         >
@@ -337,7 +337,7 @@ export default function Header(props) {
             <Typography
               className={classes.profileMenuLink}
               color="primary"
-              onClick={signOut}
+              onClick={userSignOut}
             >
               Sign Out
             </Typography>
@@ -345,5 +345,7 @@ export default function Header(props) {
         </Menu>
       </Toolbar>
     </AppBar>
+    :
+    null
   );
 }

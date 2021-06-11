@@ -1,7 +1,6 @@
-import * as React from 'react';
+import React, { useContext,useEffect } from "react";
 import * as ReactDOM from 'react-dom';
 import { Grid, GridColumn as Column, GridToolbar } from '@progress/kendo-react-grid';
-import { FirebaseContext } from '../../components/Firebase/context';
 import { MyCommandCell } from './myCommandCell';
 import { useLoading, ThreeDots} from '@agney/react-loading';
 import Notification from "../../components/Notification";
@@ -17,8 +16,20 @@ import {
 import Widget from "../../components/Widget/Widget";
 import { CircularProgressWithLabel } from "../../components/CircularProgressWithLabel"
 
+import { useSelector, useDispatch } from "react-redux";
+import { FirebaseContext } from '../../redux';
+
 let deleteDataItem;
 export default function Fee() {
+    const { api } = useContext(FirebaseContext);
+    const {
+        addFee,
+        updateFee,
+        deleteFee
+      } = api;
+    const fee = useSelector(state => state.fee);
+    const dispatch = useDispatch();
+
     var classes = useStyles();
     const { containerProps, indicatorEl } = useLoading({
         loading: true,
@@ -128,7 +139,6 @@ export default function Fee() {
                   </SweetAlert>)
                   discard(dataItem);
             }else{
-                let saveData = {data:newSaveData};
                 setAlert(
                     <SweetAlert
                         title={""}
@@ -137,31 +147,10 @@ export default function Fee() {
                     >
                         <CircularProgressWithLabel value={100} />
                     </SweetAlert>)
-                if(data.length === 1){
-                    firebase.firestore().collection("fee").add(saveData).then(() => {
-                        setAlert(null);
-                        setData([...data]);
-                        handleNotificationCall();
-                        console.log("fee Document successfully add!");
-                    })
-                }else
-                {
-                    firebase.firestore().collection("fee")
-                    .get()
-                    .then((querySnapshot) => {
-                        var docs = querySnapshot.docs;
-                        if(docs.length > 0) //update documentation
-                        {
-                            firebase.firestore().collection("fee").doc(docs[0].id).update(saveData).then(() => {
-                                setAlert(null);
-                                data.sort(function(a, b){return a.Fee - b.Fee});
-                                setData([...data]);
-                                handleNotificationCall();
-                                console.log("fee Document successfully update!");
-                            })
-                        }
-                    })
-                }
+                    dispatch(addFee(newSaveData));
+                    setAlert(null);
+                    handleNotificationCall();
+                    // console.log("fee Document successfully add!");
             }
         }
     }
@@ -228,21 +217,10 @@ export default function Fee() {
                     >
                         <CircularProgressWithLabel value={100} />
                     </SweetAlert>)
-                firebase.firestore().collection("fee")
-                    .get()
-                    .then((querySnapshot) => {
-                        var docs = querySnapshot.docs;
-                        if(docs.length > 0) //update documentation
-                        {
-                            firebase.firestore().collection("fee").doc(docs[0].id).update(saveData).then(() => {
-                                setAlert(null);
-                                data.sort(function(a, b){return a.Fee - b.Fee});
-                                setData([...data]);
-                                handleNotificationCall();
-                                console.log("fee Document successfully update!");
-                            })
-                        }
-                    })
+                dispatch(updateFee(newSaveData));
+                setAlert(null);
+                handleNotificationCall();
+                // console.log("fee Document successfully update!");
             }
         }
     }
@@ -291,34 +269,10 @@ export default function Fee() {
             nitem.ID = id;
             return nitem;
         })
-        let saveData = {data:newSaveData};
-        firebase.firestore().collection("fee")
-            .get()
-            .then((querySnapshot) => {
-                var docs = querySnapshot.docs;
-                if(docs.length > 0) //update documentation
-                {
-                    setAlert(
-                        <SweetAlert
-                            title={""}
-                            onConfirm={() => {}}
-                            showConfirm={false}
-                        >
-                            <CircularProgressWithLabel value={100} />
-                        </SweetAlert>)
-                    firebase.firestore().collection("fee").doc(docs[0].id).update(saveData).then(() => {
-                        data.sort(function(a, b){return a.Fee - b.Fee});
-                        setData([...newSaveData]);
-                        // handleNotificationCall();
-                        setAlert(
-                            <SweetAlert success title="Deleted" onConfirm={deletedConfirm}>
-                              The fee has been deleted.
-                            </SweetAlert>
-                            )
-                        console.log("fee Document successfully delete update!");
-                    })
-                }
-            })
+        dispatch(deleteFee(newSaveData));
+        setAlert(null);
+        handleNotificationCall();
+        // console.log("fee Document successfully delete!");
     }
     const deleteCancel = () => {
         setAlert(null);
@@ -346,32 +300,21 @@ export default function Fee() {
     }
 
     const cancelCurrentChanges = () => {
-        firebase.firestore().collection("fee").get().then((query) => {
-            var docs = query.docs;
-            if(docs.length > 0){
-                const dbdata = docs[0].data().data;
-                dbdata.sort(function(a, b){return a.Fee - b.Fee});
-                setData(dbdata)
-            }else{
-                setData([]);
-            }
-          })
+        if(fee.info){
+            const dbdata = fee.info;
+            dbdata.sort(function(a, b){return a.Fee - b.Fee});
+            setData(dbdata)
+        }
     }
     const hasEditedItem = data.some(p => p.inEdit);
     React.useEffect(() => {
-        firebase.firestore().collection("fee").get().then((query) => {
-            var docs = query.docs;
-            if(docs.length > 0){
-                const dbdata = docs[0].data().data;
-                dbdata.sort(function(a, b){return a.Fee - b.Fee});
-                setData(dbdata)
-            }else{
-                setData([]);
-            }
+        if(fee.info){
+            const dbdata = fee.info;
+            dbdata.sort(function(a, b){return a.Fee - b.Fee});
+            setData(dbdata)
             setLoading(false);
-          })
-        
-      }, [])
+        }
+      }, [fee.info])
     return (
         <>
             <ToastContainer 

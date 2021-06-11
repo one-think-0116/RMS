@@ -1,4 +1,4 @@
-import React ,{useContext} from "react";
+import React, { useContext,useEffect } from "react";
 import { Grid, GridColumn as Column } from '@progress/kendo-react-grid';
 import { Renderers } from './renderers.js';
 import {
@@ -8,8 +8,6 @@ import {
   import Widget from "../../components/Widget/Widget";
   import { useLoading, ThreeDots} from '@agney/react-loading';
   
-  import { FirebaseContext } from '../../components/Firebase/context';
-
   import Notification from "../../components/Notification";
   import { ToastContainer, toast } from "react-toastify";
   import { Close as CloseIcon } from "@material-ui/icons";
@@ -19,6 +17,9 @@ import {
     import "./style.css"
     import { DropDownList } from '@progress/kendo-react-dropdowns';
     import { MyCustomCell } from './customCell';
+
+import { useSelector, useDispatch } from "react-redux";
+import { FirebaseContext } from '../../redux';
 
     function useAsyncState(initialValue) {
       const [value, setValue] = React.useState(initialValue);
@@ -30,6 +31,17 @@ import {
       return [value, setter];
     }
 export default function Adder(){
+
+  const { api } = useContext(FirebaseContext);
+  const {
+    updateAdders,
+    updateCalculatorRefAdder
+    } = api;
+  const adders = useSelector(state => state.adders);
+  const auth = useSelector(state => state.auth);
+  const calculator = useSelector(state => state.calculator);
+  const dispatch = useDispatch();
+
     var classes = useStyles();
     const { containerProps, indicatorEl } = useLoading({
         loading: true,
@@ -154,38 +166,21 @@ export default function Adder(){
         }
         newdata[22].total = sum;
         setData(newdata);
-        // console.log(newdata)
         setEditField(undefined);
-        firebase.firestore().collection("adders").where("email","==",localStorage.getItem("email"))
-        .get()
-        .then((querySnapshot) => {
-            var docs = querySnapshot.docs;
-            if(docs.length > 0) //update documentation
-            {
-                var updateData = {};
-                updateData.email = localStorage.getItem("email");
-                updateData.data = [];
-                newdata.map((item) => {
-                    const {temp,inEdit,...ndata} = item;
-                    updateData.data.push(ndata);
-                })
-                firebase.firestore().collection("adders").doc(docs[0].id).update(updateData).then(() => {
-                    console.log("adders Document successfully update!");
-                    firebase.firestore().collection("calculators").where("email","==",localStorage.getItem("email"))
-                    .get()
-                    .then((querySnapshot) => {
-                        var docs = querySnapshot.docs;
-                        if(docs.length > 0) //update documentation
-                        {
-                            var newCalcData = {C18:sum.toString()};
-                            firebase.firestore().collection("calculators").doc(docs[0].id).update(newCalcData).then(() => {
-                                console.log("calculators Document successfully update!");
-                            })
-                        }
-                    })
-                })
-            }
+        // console.log(newdata)
+
+        var updateData = [];
+        newdata.map((item) => {
+            const {temp,inEdit,...ndata} = item;
+            updateData.push(ndata);
         })
+        let uid = auth.refinfo.uid;
+        dispatch(updateAdders(uid,updateData));
+        // console.log("adders Document successfully update!");
+
+        var newCalcData = {C18:sum.toString()};
+        dispatch(updateCalculatorRefAdder(uid,newCalcData));
+        // console.log("calculators Document successfully update!");
     } 
     const exitEdit = () => {
       core(data)
@@ -193,60 +188,33 @@ export default function Adder(){
 
     const itemChange = (event) => {
       event.dataItem[event.field] = event.value;
-      // console.log("itemchange",event)
         const newdata = data.map(item => {
-            // var temp = {};
-            // var key = event.dataItem[event.field];
-            // temp[key] = event.value;
-            // return {...item,temp};
             return {...item}
             }
         );
-        // console.log(newdata)
         setData(newdata);
         setChanges(true);
     }
-    // const quantityChange = (qdata) => {
-    //   qdata.dataItem[qdata.field] = qdata.value;
-    // }
     const renderers =  new Renderers(enterEdit, exitEdit, 'inEdit');
+    // console.log("auth allow",auth.info.profile,auth.info.profile.allow)
     React.useEffect(() => {
-
-        firebase.firestore().collection("users").where("email","==",localStorage.getItem("email")).get().then((query) => {
-            query.forEach((doc) => {
-              if(doc.data().allow)
-              {
-                firebase.firestore().collection("adders").where("email","==",localStorage.getItem("email")).get().then((query) => {
-                  query.forEach((doc) => {
-                    //   console.log(doc.data().data[0]);
-                    // var em = [];
-                    // em.push(doc.data().data[0])
-                    // setData(em)
-                    firebase.firestore().collection("calculators").where("email","==",localStorage.getItem("email")).get().then((query) => {
-                      query.forEach((doc) => {
-                        setSystemSize(getNum(doc.data().C10))
-                      })
-                    })
-                    const newdata = doc.data().data.map(item => {
-                      if(item.scale === "per watt add-on" || item.scale === "Added price"){
-                        if(item.quantity === "Yes") return item;
-                        else return {...item,quantity:"No"};
-                      }else{
-                        return item;
-                      }
-                    })
-                    setData(newdata)
-                    setLoading(false);
-                  })
-                })
-              }else{
-                handleNotificationCall();
-              }
-            })
+        if(auth.info.profile.allow){
+            setSystemSize(getNum(calculator.info.C10))
+            const newdata = adders.info.map(item => {
+            if(item.scale === "per watt add-on" || item.scale === "Added price"){
+              if(item.quantity === "Yes") return item;
+              else return {...item,quantity:"No"};
+            }else{
+              return item;
+            }
           })
-        
-      }, [])
-
+          setData(newdata)
+          setLoading(false);
+        }else
+        {
+          handleNotificationCall();
+        }
+    }, [auth.info.profile.allow,adders.info,calculator.info.C10])
       return(
         <>
             <ToastContainer 

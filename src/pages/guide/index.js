@@ -1,4 +1,4 @@
-import React ,{useContext} from "react";
+import React, { useContext,useEffect } from "react";
 import { Grid, GridColumn as Column } from '@progress/kendo-react-grid';
 import { Renderers } from './renderers.js';
 import {
@@ -7,9 +7,18 @@ import {
   } from '@material-ui/core';
 import Widget from "../../components/Widget/Widget";
 import { useLoading, ThreeDots} from '@agney/react-loading';
-import { FirebaseContext } from '../../components/Firebase/context';
+
+import { useSelector, useDispatch } from "react-redux";
+import { FirebaseContext } from '../../redux';
 
 export default function Guide(){
+    const { api } = useContext(FirebaseContext);
+    const {
+        updateGuide,
+      } = api;
+    const guide = useSelector(state => state.guide);
+    const dispatch = useDispatch();
+
     const { containerProps, indicatorEl } = useLoading({
         loading: true,
         indicator: <ThreeDots width="50" />,
@@ -36,33 +45,14 @@ export default function Guide(){
             ));
             setData(newdata);
             setEditField(undefined);
-            firebase.firestore().collection("guide")
-            .get()
-            .then((querySnapshot) => {
-                var docs = querySnapshot.docs;
-                if(docs.length > 0) //update documentation
-                {
-                    var updateData = {};
-                    updateData.data = [];
-                    newdata.map((item) => {
-                        const {temp,inEdit,...ndata} = item;
-                        updateData.data.push(ndata);
-                    })
-                    firebase.firestore().collection("guide").doc(docs[0].id).update(updateData).then(() => {
-                        console.log("guide Document successfully update!");
-                    })
-                }else{
-                    var updateData = {};
-                    updateData.data = [];
-                    newdata.map((item) => {
-                        const {temp,inEdit,...ndata} = item;
-                        updateData.data.push(ndata);
-                    })
-                    firebase.firestore().collection("guide").add(updateData).then(() => {
-                        console.log("guide Document successfully add!");
-                    })
-                }
+
+            var updateData = {};
+            updateData.data = [];
+            newdata.map((item) => {
+                const {temp,inEdit,...ndata} = item;
+                updateData.data.push(ndata);
             })
+            dispatch(updateGuide(updateData));
     }
 
     const itemChange = (event) => {
@@ -79,13 +69,9 @@ export default function Guide(){
     }
     const renderers =  new Renderers(enterEdit, exitEdit, 'inEdit');
     React.useEffect(() => {
-        firebase.firestore().collection("guide").get().then((query) => {
-            if(query.docs.length === 1){
-                query.forEach((doc) => {
-                    setData(doc.data().data)
-                    setLoading(false);
-                  })
-            }else{
+        if(guide.info){
+            const dbdata = guide.info;
+            if(dbdata.length === 0){
                 let initialData = [];
                 let tempRowData = {};
                 let key;
@@ -98,10 +84,12 @@ export default function Guide(){
                 }
                 setData(initialData);
                 setLoading(false); 
+            }else{
+                setData(dbdata.data)
+                setLoading(false);
             }
-          
-        })
-      }, [])
+        }
+      }, [guide.info])
       return(
         <>
             {loading ?    

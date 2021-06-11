@@ -15,13 +15,7 @@ import Header from "../Header";
 import Sidebar from "../Sidebar";
 
 // pages
-import Dashboard from "../../pages/dashboard";
-import Typography from "../../pages/typography";
-import Notifications from "../../pages/notifications";
-import Maps from "../../pages/maps";
-import Tables from "../../pages/tables";
-import Icons from "../../pages/icons";
-import Charts from "../../pages/charts";
+// import Dashboard from "../../pages/dashboard";
 import Calculator from "../../pages/calculator";
 import Adder from "../../pages/adders";
 import Formulas from "../../pages/formulas";
@@ -33,17 +27,14 @@ import Battery from "../../pages/battery";
 import Selfgen from "../../pages/selfgen";
 import Module from "../../pages/module";
 
-
-// context
-import { useLayoutState } from "../../context/LayoutContext";
-//jwt
-import jwt_decode from "jwt-decode";
-
+import { useSelector, useDispatch } from "react-redux";
+import { FirebaseContext } from '../../redux';
 function Layout(props) {
-  var classes = useStyles();
 
+  const auth = useSelector(state => state.auth);
+  const layout = useSelector(state => state.layout);
+  var classes = useStyles();
   // global
-  var layoutState = useLayoutState();
   return (
     <div className={classes.root}>
         <>
@@ -51,51 +42,36 @@ function Layout(props) {
           <Sidebar />
           <div
             className={classnames(classes.content, {
-              [classes.contentShift]: layoutState.isSidebarOpened,
+              [classes.contentShift]: layout.isSidebarOpened,
             })}
           >
             <div className={classes.fakeToolbar} />
-            <Switch>
-              <Route path="/app/calculator" component={Calculator} />
-              <Route path="/app/adders" component={Adder} />
-              {/* <Route path="/app/typography" component={Typography} /> */}
-              {/* <Route path="/app/tables" component={Tables} /> */}
-              {/* <Route path="/app/notifications" component={Notifications} /> */}
-              <PrivateRoute path="/app/dashboard" component={Dashboard} />
-              <PrivateRoute path="/app/formulas" component={Formulas} />
-              <PrivateRoute path="/app/users" component={Users} />
-              <PrivateRoute path="/app/guide" component={Guide} />
-              <PrivateRoute path="/app/fee" component={Fee} />
-              <PrivateRoute path="/app/cash" component={Cash} />
-              <PrivateRoute path="/app/battery_type" component={Battery} />
-              <PrivateRoute path="/app/selfgen_lead" component={Selfgen} />
-              <PrivateRoute path="/app/module" component={Module} />
-              {/* <Route
-                exact
-                path="/app/ui"
-                render={() => <Redirect to="/app/ui/icons" />}
-              />
-              <Route path="/app/ui/maps" component={Maps} />
-              <Route path="/app/ui/icons" component={Icons} />
-              <Route path="/app/ui/charts" component={Charts} /> */}
-            </Switch>
-            
-          </div>
+              <Switch>
+                <Route path="/app/calculator" component={Calculator} />
+                <Route path="/app/adders" component={Adder} />
+                {/* <PrivateRoute path="/app/dashboard" role={auth.info?auth.info.profile.role:null} component={Dashboard} /> */}
+                <PrivateRoute path="/app/formulas" role={auth.info?auth.info.profile.role:null} component={Formulas} />
+                <PrivateRoute path="/app/users" role={auth.info?auth.info.profile.role:null} component={Users} />
+                <PrivateRoute path="/app/guide" role={auth.info?auth.info.profile.role:null} component={Guide} />
+                <PrivateRoute path="/app/fee" role={auth.info?auth.info.profile.role:null} component={Fee} />
+                <PrivateRoute path="/app/cash" role={auth.info?auth.info.profile.role:null} component={Cash} />
+                <PrivateRoute path="/app/battery_type" role={auth.info?auth.info.profile.role:null} component={Battery} />
+                <PrivateRoute path="/app/selfgen_lead" role={auth.info?auth.info.profile.role:null} component={Selfgen} />
+                <PrivateRoute path="/app/module" role={auth.info?auth.info.profile.role:null} component={Module} />
+              </Switch>
+            </div>
         </>
     </div>
   );
 }
-const PrivateRoute = ({ component: Component, ...rest }) => (
+const PrivateRoute = ({ component: Component,role:role, ...rest }) => (
   <Route {...rest} render={(props) => 
     {
-      var decoded;
-      if(localStorage.getItem('token')){
-        decoded = jwt_decode(localStorage.getItem('token'))
-      }
       return (
-        decoded.role === "admin"
+        role === "admin"
           ? <Component {...props} />
-          : <Redirect to={{
+          : 
+          <Redirect to={{
               pathname: '/app/calculator',
               state: { from: props.location }
             }} />

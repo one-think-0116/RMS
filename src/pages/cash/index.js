@@ -1,7 +1,6 @@
-import * as React from 'react';
+import React, { useContext,useEffect } from "react";
 import * as ReactDOM from 'react-dom';
 import { Grid, GridColumn as Column, GridToolbar } from '@progress/kendo-react-grid';
-import { FirebaseContext } from '../../components/Firebase/context';
 import { MyCommandCell } from './myCommandCell';
 import { useLoading, ThreeDots} from '@agney/react-loading';
 import Notification from "../../components/Notification";
@@ -17,15 +16,26 @@ import Widget from "../../components/Widget/Widget";
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { CircularProgressWithLabel } from "../../components/CircularProgressWithLabel"
 
+import { useSelector, useDispatch } from "react-redux";
+import { FirebaseContext } from '../../redux';
+
 let deleteDataItem;
 export default function Cash() {
+    const { api } = useContext(FirebaseContext);
+    const {
+        addCash,
+        updateCash,
+        deleteCash
+      } = api;
+    const cash = useSelector(state => state.cash);
+    const dispatch = useDispatch();
+
     var classes = useStyles();
     const { containerProps, indicatorEl } = useLoading({
         loading: true,
         indicator: <ThreeDots width="50" />,
       });
     const [loading, setLoading] = React.useState(true);
-    const firebase = React.useContext(FirebaseContext);
     const [editField, setEditField] = React.useState("inEdit");
     const [data, setData] = React.useState([]);
     const [alert,setAlert] = React.useState(null);
@@ -116,7 +126,6 @@ export default function Cash() {
                   </SweetAlert>)
                   discard(dataItem);
             }else{
-                let saveData = {data:newSaveData};
                 setAlert(
                     <SweetAlert
                         title={""}
@@ -125,32 +134,11 @@ export default function Cash() {
                     >
                         <CircularProgressWithLabel value={100} />
                     </SweetAlert>)
-                if(data.length === 1){
-                    firebase.firestore().collection("cash").add(saveData).then(() => {
-                        setAlert(null);
-                        setData([...data]);
-                        handleNotificationCall();
-                        console.log("cash Document successfully add!");
-                    })
-                }else
-                {
-                    firebase.firestore().collection("cash")
-                    .get()
-                    .then((querySnapshot) => {
-                        var docs = querySnapshot.docs;
-                        if(docs.length > 0) //update documentation
-                        {
-                            firebase.firestore().collection("cash").doc(docs[0].id).update(saveData).then(() => {
-                                setAlert(null);
-                                data.sort(function(a, b){return a.cash - b.cash});
-                                setData([...data]);
-                                handleNotificationCall();
-                                console.log("cash Document successfully update!");
-                            })
-                        }
-                    })
+                    dispatch(addCash(newSaveData));
+                    setAlert(null);
+                    handleNotificationCall();
+                    // console.log("cash Document successfully add!");
                     
-                }
             }
         }
     }
@@ -196,7 +184,6 @@ export default function Cash() {
                   </SweetAlert>)
                   cancelCurrentChanges()
             }else{
-                let saveData = {data:newSaveData};
                 setAlert(
                     <SweetAlert
                         title={""}
@@ -205,21 +192,10 @@ export default function Cash() {
                     >
                         <CircularProgressWithLabel value={100} />
                     </SweetAlert>)
-                firebase.firestore().collection("cash")
-                    .get()
-                    .then((querySnapshot) => {
-                        var docs = querySnapshot.docs;
-                        if(docs.length > 0) //update documentation
-                        {
-                            firebase.firestore().collection("cash").doc(docs[0].id).update(saveData).then(() => {
-                                setAlert(null);
-                                data.sort(function(a, b){return a.cash - b.cash});
-                                setData([...data]);
-                                handleNotificationCall();
-                                console.log("cash Document successfully update!");
-                            })
-                        }
-                    })
+                    dispatch(updateCash(newSaveData));
+                    setAlert(null);
+                    handleNotificationCall();
+                    // console.log("cash Document successfully update!");
             }
         }
         
@@ -269,34 +245,10 @@ export default function Cash() {
             nitem.ID = id;
             return nitem;
         })
-        let saveData = {data:newSaveData};
-        firebase.firestore().collection("cash")
-            .get()
-            .then((querySnapshot) => {
-                var docs = querySnapshot.docs;
-                if(docs.length > 0) //update documentation
-                {
-                    setAlert(
-                        <SweetAlert
-                            title={""}
-                            onConfirm={() => {}}
-                            showConfirm={false}
-                        >
-                            <CircularProgressWithLabel value={100} />
-                        </SweetAlert>)
-                    firebase.firestore().collection("cash").doc(docs[0].id).update(saveData).then(() => {
-                        data.sort(function(a, b){return a.cash - b.cash});
-                        setData([...newSaveData]);
-                        // handleNotificationCall();
-                        setAlert(
-                            <SweetAlert success title="Deleted" onConfirm={deletedConfirm}>
-                              The cash has been deleted.
-                            </SweetAlert>
-                            )
-                        console.log("cash Document successfully delete update!");
-                    })
-                }
-            })
+        dispatch(deleteCash(newSaveData));
+        setAlert(null);
+        handleNotificationCall();
+        // console.log("cash Document successfully delete!");
     }
     const deleteCancel = () => {
         setAlert(null);
@@ -324,32 +276,21 @@ export default function Cash() {
     }
 
     const cancelCurrentChanges = () => {
-        firebase.firestore().collection("cash").get().then((query) => {
-            var docs = query.docs;
-            if(docs.length > 0){
-                const dbdata = docs[0].data().data;
-                dbdata.sort(function(a, b){return a.cash - b.cash});
-                setData(dbdata)
-            }else{
-                setData([]);
-            }
-          })
+        if(cash.info){
+            const dbdata = cash.info;
+            dbdata.sort(function(a, b){return a.cash - b.cash});
+            setData(dbdata)
+        }
     }
     const hasEditedItem = data.some(p => p.inEdit);
     React.useEffect(() => {
-        firebase.firestore().collection("cash").get().then((query) => {
-            var docs = query.docs;
-            if(docs.length > 0){
-                const dbdata = docs[0].data().data;
-                dbdata.sort(function(a, b){return a.cash - b.cash});
-                setData(dbdata)
-            }else{
-                setData([]);
-            }
+        if(cash.info){
+            const dbdata = cash.info;
+            dbdata.sort(function(a, b){return a.cash - b.cash});
+            setData(dbdata)
             setLoading(false);
-          })
-        
-      }, [])
+        }
+      }, [cash.info])
     return (
         <>
             <ToastContainer 
@@ -396,8 +337,5 @@ export default function Cash() {
             
             }
         </>
-        
     );
-
-    
 }

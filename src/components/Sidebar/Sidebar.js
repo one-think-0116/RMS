@@ -1,4 +1,4 @@
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect, useContext} from "react";
 import { Drawer, IconButton, List } from "@material-ui/core";
 import {
   Home as HomeIcon,
@@ -19,26 +19,20 @@ import { useTheme } from "@material-ui/styles";
 import { withRouter } from "react-router-dom";
 import classNames from "classnames";
 
+import { useSelector, useDispatch } from "react-redux";
+import { FirebaseContext } from '../../redux';
+
 // styles
 import useStyles from "./styles";
 
 // components
 import SidebarLink from "./components/SidebarLink/SidebarLink";
 
-// context
-import {
-  useLayoutState,
-  useLayoutDispatch,
-  toggleSidebar,
-} from "../../context/LayoutContext";
-
-import jwt_decode from "jwt-decode";
-
 //firebase
 
 
 const admin_structure = [
-  { id: 0, label: "Dashboard", link: "/app/dashboard", icon: <HomeIcon /> },
+  // { id: 0, label: "Dashboard", link: "/app/dashboard", icon: <HomeIcon /> },
   { id: 1, label: "Calculator", link: "/app/calculator", icon: <AttachMoneyIcon /> },
   { id: 2, label: "Adders", link: "/app/adders", icon: <PlaylistAddIcon /> },
   { id: 3, type: "divider" },
@@ -60,49 +54,54 @@ const seller_structure = [
   
 
 function Sidebar({ location }) {
+  const { api } = useContext(FirebaseContext);
+  const {
+    toggleSidebar,
+  } = api;
+  const dispatch = useDispatch();
   //
   var classes = useStyles();
   var theme = useTheme();
 
-  // global
-  var { isSidebarOpened } = useLayoutState();
-  var layoutDispatch = useLayoutDispatch();
-
   // local
   var [isPermanent, setPermanent] = useState(true);
   const [structure,setStructure] = useState(seller_structure);
+  const auth = useSelector(state => state.auth);
+  const layout = useSelector(state => state.layout);
+
   useEffect(function() {
-    if(localStorage.getItem('token')){
-      const decoded = jwt_decode(localStorage.getItem('token'))
-      // console.log(decoded);
-      decoded.role === "admin"? setStructure(admin_structure) : setStructure(seller_structure);
+    if(auth.info){
+      if(auth.info.profile.role === "admin"){
+        setStructure(admin_structure)
+      }else{
+        setStructure(seller_structure)
+      }
+      window.addEventListener("resize", handleWindowWidthChange);
+      handleWindowWidthChange();
     }else{
-      setStructure(seller_structure)
+      return function cleanup() {
+        window.removeEventListener("resize", handleWindowWidthChange);
+      };
     }
-    window.addEventListener("resize", handleWindowWidthChange);
-    handleWindowWidthChange();
-    return function cleanup() {
-      window.removeEventListener("resize", handleWindowWidthChange);
-    };
-  });
+  },[auth.info]);
       return (
         <Drawer
           variant={isPermanent ? "permanent" : "temporary"}
           className={classNames(classes.drawer, {
-            [classes.drawerOpen]: isSidebarOpened,
-            [classes.drawerClose]: !isSidebarOpened,
+            [classes.drawerOpen]: layout.isSidebarOpened,
+            [classes.drawerClose]: !layout.isSidebarOpened,
           })}
           classes={{
             paper: classNames({
-              [classes.drawerOpen]: isSidebarOpened,
-              [classes.drawerClose]: !isSidebarOpened,
+              [classes.drawerOpen]: layout.isSidebarOpened,
+              [classes.drawerClose]: !layout.isSidebarOpened,
             }),
           }}
-          open={isSidebarOpened}
+          open={layout.isSidebarOpened}
         >
           <div className={classes.toolbar} />
           <div className={classes.mobileBackButton}>
-            <IconButton onClick={() => toggleSidebar(layoutDispatch)}>
+            <IconButton onClick={() => dispatch(toggleSidebar())}>
               <ArrowBackIcon
                 classes={{
                   root: classNames(classes.headerIcon, classes.headerIconCollapse),
@@ -115,7 +114,7 @@ function Sidebar({ location }) {
               <SidebarLink
                 key={link.id}
                 location={location}
-                isSidebarOpened={isSidebarOpened}
+                isSidebarOpened={layout.isSidebarOpened}
                 {...link}
               />
             ))}
